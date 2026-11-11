@@ -43,8 +43,20 @@ export function authRoutes(deps: Deps) {
     const code = c.req.query("code");
     if (!code || !expected || c.req.query("state") !== expected) return c.text("Sign-in expired. Please try again.", 400);
 
-    const token = await deps.exchangeCode(code);
-    const { data: gu } = await deps.userGithub(token).rest.users.getAuthenticated();
+    if (c.req.query("error")) {
+      return c.redirect(`${deps.env.APP_URL}/signin?error=${encodeURIComponent(c.req.query("error_description") ?? "GitHub sign-in was cancelled.")}`);
+    }
+
+    let token: string;
+    let gu: { id: number; login: string; name: string | null; avatar_url: string };
+    try {
+      token = await deps.exchangeCode(code);
+      gu = (await deps.userGithub(token).rest.users.getAuthenticated()).data;
+    } catch (err) {
+      deps.log.error("GitHub sign-in failed", { err: String(err) });
+      const reason = "GitHub didn't accept the sign-in. Check GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in .env, then try again.";
+      return c.redirect(`${deps.env.APP_URL}/signin?error=${encodeURIComponent(reason)}`);
+    }
     const [user] = await deps.db
       .insert(users)
       .values({ githubUserId: gu.id, login: gu.login, name: gu.name, avatarUrl: gu.avatar_url, lastLoginAt: new Date() })

@@ -11,6 +11,7 @@ export function SignIn() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const returnTo = params.get("return_to") ?? "/workspaces";
+  const error = params.get("error");
   return (
     <div className="centered">
       <div className="centered-card">
@@ -21,6 +22,7 @@ export function SignIn() {
           <h1 className="signin-title">Review the PRs that are ready.</h1>
           <p className="signin-lede">PRoof checks every pull request before you open it and shows you the evidence, not a verdict.</p>
         </div>
+        {error && <Callout tone="fail" title="Sign-in didn't finish">{error}</Callout>}
         <ul className="signin-points">
           <li>
             <FileSearch />

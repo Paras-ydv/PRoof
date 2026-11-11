@@ -1,3 +1,10 @@
 export * from "./config.js";
 export * from "./types.js";
 export * from "./diff.js";
+export * from "./report.js";
+export { issueCheck, templateCheck, ciCheck } from "./checks/hygiene.js";
+export { testsCheck, sizeCheck, DEFAULT_TEST_PATTERNS } from "./checks/code.js";
+export { questionsCheck } from "./checks/questions.js";
+export { sprayCheck, historyCheck, isNewcomer } from "./checks/contributor.js";
+export { customRuleCheck, externalCheck, externalCheckPayload, ExternalCheckResponse } from "./checks/custom.js";
+export { ghostCodeCheck, buildSymbolIndex, findGhosts, langForPath, type SourceFile, type Ghost } from "./ghost/index.js";

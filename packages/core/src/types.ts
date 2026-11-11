@@ -84,12 +84,14 @@ export interface QuestionState {
 }
 
 export interface SymbolIndex {
-  /** Names defined anywhere in the repo at base or head. */
+  /** Names defined anywhere in the repo at the PR head (so names the PR adds count too). */
   defined: Set<string>;
-  /** Names that come from outside the repo and are known to exist (stdlib, builtins). */
-  known: Set<string>;
-  /** Module specifiers that are external dependencies; members of these are "unknown", never "ghost". */
-  externalModules: Set<string>;
+  /** Top-level Python packages in the repo, so `from pkg.x import y` counts as a local import. */
+  pythonPackages: Set<string>;
+  /** Go module path from go.mod, so imports under it count as local. */
+  goModule?: string;
+  /** Files that were indexed. */
+  fileCount: number;
 }
 
 export type CheckStatus = "pass" | "warn" | "fail" | "pending" | "na";

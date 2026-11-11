@@ -5,3 +5,10 @@ packages:
 # Never install a package version published less than 7 days ago.
 # Reduces exposure to compromised releases; PRoof is meant to be auditable.
 minimumReleaseAge: 10080
+
+# Grammar packages ship prebuilt .wasm files; their native builds aren't needed.
+ignoredBuiltDependencies:
+  - tree-sitter-go
+  - tree-sitter-javascript
+  - tree-sitter-python
+  - tree-sitter-typescript

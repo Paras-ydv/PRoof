@@ -32,6 +32,11 @@ export function baseDeps(db: Deps["db"], over: Partial<Deps> = {}): Deps {
     },
     gateway: async () => null,
     enqueue: async () => {},
+    userGithub: () => {
+      throw new Error("no user github in this test");
+    },
+    exchangeCode: async () => "gho_test",
+    getInstallation: async () => null,
     ...over,
   };
 }

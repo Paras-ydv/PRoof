@@ -1,0 +1,101 @@
+import { Hono } from "hono";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
+import { users, workspaces, eq } from "@proof/db";
+import { randomToken } from "../crypto.js";
+import type { Deps } from "../deps.js";
+import { visibleInstallations } from "./access.js";
+import { createSession, endSession, readSession } from "./session.js";
+
+const STATE_COOKIE = "proof_oauth_state";
+
+/** Only same-site relative paths, so the login flow can't redirect somewhere else. */
+export function safeReturnTo(value: string | undefined): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return "/";
+  return value;
+}
+
+export function authRoutes(deps: Deps) {
+  const app = new Hono();
+  const secure = deps.env.NODE_ENV === "production";
+
+  /** Start GitHub sign-in. */
+  app.get("/github/login", (c) => {
+    const state = randomToken(16);
+    const returnTo = safeReturnTo(c.req.query("return_to"));
+    setCookie(c, STATE_COOKIE, `${state}|${returnTo}`, { httpOnly: true, secure, sameSite: "Lax", path: "/", maxAge: 600 });
+    const url = new URL("https://github.com/login/oauth/authorize");
+    url.searchParams.set("client_id", deps.env.GITHUB_CLIENT_ID);
+    url.searchParams.set("redirect_uri", `${deps.env.API_URL}/auth/github/callback`);
+    url.searchParams.set("state", state);
+    return c.redirect(url.toString());
+  });
+
+  /** GitHub sends the user back here with a one-time code. */
+  app.get("/github/callback", async (c) => {
+    const [expected, returnTo] = (getCookie(c, STATE_COOKIE) ?? "").split("|");
+    deleteCookie(c, STATE_COOKIE, { path: "/" });
+    const code = c.req.query("code");
+    if (!code || !expected || c.req.query("state") !== expected) return c.text("Sign-in expired. Please try again.", 400);
+
+    const token = await deps.exchangeCode(code);
+    const { data: gu } = await deps.userGithub(token).rest.users.getAuthenticated();
+    const [user] = await deps.db
+      .insert(users)
+      .values({ githubUserId: gu.id, login: gu.login, name: gu.name, avatarUrl: gu.avatar_url, lastLoginAt: new Date() })
+      .onConflictDoUpdate({ target: users.githubUserId, set: { login: gu.login, name: gu.name, avatarUrl: gu.avatar_url, lastLoginAt: new Date() } })
+      .returning();
+    await createSession(deps, c, user!.id, token);
+    return c.redirect(`${deps.env.APP_URL}${safeReturnTo(returnTo)}`);
+  });
+
+  app.post("/logout", async (c) => {
+    await endSession(deps, c);
+    return c.json({ ok: true });
+  });
+
+  return app;
+}
+
+/**
+ * GitHub's "Setup URL": where people land after installing the app.
+ * GitHub's docs warn that installation_id can be spoofed, so it is only trusted
+ * after confirming, with the user's own token, that they can see that installation.
+ */
+export function setupRoutes(deps: Deps) {
+  const app = new Hono();
+
+  app.get("/setup", async (c) => {
+    const action = c.req.query("setup_action");
+    const user = await readSession(deps, c);
+    if (!user) {
+      const back = `/github/setup?${new URLSearchParams(c.req.queries() as never).toString()}`;
+      return c.redirect(`/auth/github/login?return_to=${encodeURIComponent(back)}`);
+    }
+    if (action === "request") return c.redirect(`${deps.env.APP_URL}/setup/requested`);
+
+    const id = Number(c.req.query("installation_id"));
+    if (!Number.isInteger(id) || id <= 0) return c.redirect(`${deps.env.APP_URL}/`);
+    const visible = await visibleInstallations(deps, user);
+    if (!visible.includes(id)) return c.redirect(`${deps.env.APP_URL}/setup/not-yours`);
+
+    // The installation webhook normally creates the workspace; if it hasn't arrived yet, read it from GitHub.
+    let [ws] = await deps.db.select().from(workspaces).where(eq(workspaces.installationId, id)).limit(1);
+    if (!ws) {
+      const inst = await deps.getInstallation(id);
+      if (!inst) return c.redirect(`${deps.env.APP_URL}/`);
+      [ws] = await deps.db
+        .insert(workspaces)
+        .values({
+          githubAccountId: inst.account.id,
+          login: inst.account.login,
+          accountType: inst.account.type === "User" ? "User" : "Organization",
+          installationId: inst.id,
+        })
+        .onConflictDoUpdate({ target: workspaces.githubAccountId, set: { installationId: inst.id, status: "active", updatedAt: new Date() } })
+        .returning();
+    }
+    return c.redirect(`${deps.env.APP_URL}/w/${ws!.login}?welcome=1`);
+  });
+
+  return app;
+}

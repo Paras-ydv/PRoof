@@ -33,6 +33,12 @@ export interface Deps {
   gateway(ws: Workspace): Promise<{ gateway: ModelGateway; record(task: string, usage: Usage): Promise<void> } | null>;
   /** Hand a job to the queue. */
   enqueue(name: JobName, data: unknown, opts?: { singletonKey?: string; startAfter?: number }): Promise<void>;
+  /** A GitHub client acting as a signed-in user. */
+  userGithub(token: string): Octokit;
+  /** GitHub sign-in: turn an OAuth code into a user access token. */
+  exchangeCode(code: string): Promise<string>;
+  /** Read an installation with the app's own credentials (used during setup). */
+  getInstallation(id: number): Promise<{ id: number; account: { id: number; login: string; type: string } } | null>;
 }
 
 export type JobName = "pr.analyze" | "pr.answer" | "pr.ask" | "claim.command" | "claims.sweep";

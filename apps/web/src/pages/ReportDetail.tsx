@@ -60,8 +60,8 @@ export function ReportDetail() {
                 { value: "contributor", label: "What the author sees" },
               ]}
             />
-            <ButtonLink to={r.url} icon={<GitPullRequest />} trailing={<ArrowUpRight />}>
-              Open PR
+            <ButtonLink to={r.url} variant="primary" icon={<GitPullRequest />} trailing={<ArrowUpRight />}>
+              View on GitHub
             </ButtonLink>
           </>
         }
@@ -77,16 +77,24 @@ export function ReportDetail() {
             </div>
             <h2 className="report-title">{r.title}</h2>
             <div className="report-meta">
-              <span className="mono">
+              <a className="report-meta-link mono" href={r.url} target="_blank" rel="noreferrer" title="Open the pull request on GitHub">
                 {r.repo} #{r.prNumber}
-              </span>
+              </a>
               <span>
-                <User /> {r.author}
+                <a className="report-meta-link" href={`https://github.com/${r.author}`} target="_blank" rel="noreferrer" title="Author's GitHub profile">
+                  <User /> {r.author}
+                </a>
                 {rep.newcomer && " · first contribution here"}
               </span>
-              <span className="mono">
+              <a
+                className="report-meta-link mono"
+                href={`${r.url}/commits/${r.headSha}`}
+                target="_blank"
+                rel="noreferrer"
+                title="The commit this report is for"
+              >
                 <GitCommitHorizontal /> {r.headSha.slice(0, 7)}
-              </span>
+              </a>
               <span>
                 <Clock /> updated {timeAgo(r.updatedAt)}
               </span>

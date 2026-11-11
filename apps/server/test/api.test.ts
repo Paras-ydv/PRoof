@@ -55,9 +55,17 @@ describe("dashboard API", async () => {
     expect(safeReturnTo("https://evil.com")).toBe("/");
   });
 
-  it("rejects a sign-in callback with the wrong state", async () => {
-    const res = await app.request("/auth/github/callback?code=c&state=forged");
-    expect(res.status).toBe(400);
+  it("never uses a code with the wrong state", async () => {
+    let exchanged = false;
+    const strict = createApp(baseDeps(db, { exchangeCode: async () => ((exchanged = true), "gho_x") }), async () => true);
+    const res = await strict.request("/auth/github/callback?code=c&state=forged");
+    expect(res.headers.get("location")).toMatch(/^https:\/\/app\.example\/signin\?error=/);
+    expect(exchanged).toBe(false);
+  });
+
+  it("restarts sign-in once when GitHub returns from an install without state", async () => {
+    const res = await app.request("/auth/github/callback?code=c&installation_id=51&setup_action=install");
+    expect(res.headers.get("location")).toBe(`/auth/github/login?return_to=${encodeURIComponent("/github/setup?installation_id=51&setup_action=install")}`);
   });
 
   it("sends a spoofed installation id to the not-yours page", async () => {

@@ -42,11 +42,22 @@ export function authRoutes(deps: Deps) {
   app.get("/github/callback", async (c) => {
     const [expected, returnTo] = (getCookie(c, STATE_COOKIE) ?? "").split("|");
     deleteCookie(c, STATE_COOKIE, { path: "/" });
-    const code = c.req.query("code");
-    if (!code || !expected || c.req.query("state") !== expected) return c.text("Sign-in expired. Please try again.", 400);
-
     if (c.req.query("error")) {
       return c.redirect(`${deps.env.APP_URL}/signin?error=${encodeURIComponent(c.req.query("error_description") ?? "GitHub sign-in was cancelled.")}`);
+    }
+
+    const code = c.req.query("code");
+    if (!code || !expected || c.req.query("state") !== expected) {
+      // Without our state the code can't be trusted (login CSRF), so it is never used.
+      // Right after an install GitHub can send people here with no state: restart sign-in once and
+      // continue the setup. The retry has no installation_id, so it can't loop.
+      const inst = c.req.query("installation_id");
+      if (inst) {
+        const back = `/github/setup?${new URLSearchParams({ installation_id: inst, setup_action: c.req.query("setup_action") ?? "install" })}`;
+        return c.redirect(`/auth/github/login?return_to=${encodeURIComponent(back)}`);
+      }
+      // Otherwise the 10-minute window passed or the page was reloaded.
+      return c.redirect(`${deps.env.APP_URL}/signin?error=${encodeURIComponent("That sign-in link expired. Sign in again to continue.")}`);
     }
 
     let token: string;

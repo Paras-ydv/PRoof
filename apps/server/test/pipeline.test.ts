@@ -11,7 +11,14 @@ function fakeGithub(log: string[]) {
     paginate: async () => [{ filename: "src/upload.ts", status: "added", additions: 6, deletions: 0, patch }],
     graphql: async () => ({ repository: { pullRequest: { closingIssuesReferences: { nodes: [{ number: 4, title: "Upload", assignees: { nodes: [{ login: "dana" }] } }] } } } }),
     rest: {
-      pulls: { listFiles: () => {} },
+      pulls: {
+        listFiles: () => {},
+        get: async (q: any) => {
+          const pull = pulls.get(q.pull_number);
+          if (!pull) throw Object.assign(new Error("nf"), { status: 404 });
+          return { data: pull };
+        },
+      },
       repos: {
         getContent: async () => {
           throw Object.assign(new Error("nf"), { status: 404 });
@@ -36,9 +43,11 @@ function fakeGithub(log: string[]) {
   } as any;
 }
 
+const pulls = new Map<number, any>();
 const job: AnalyzeJob = {
   installationId: 77,
   repo: { id: 9001, fullName: "acme/widgets", private: false },
+  number: 12,
   pull: {
     number: 12,
     title: "Add upload",
@@ -60,6 +69,7 @@ describe("analyzePr", async () => {
   let deps: ReturnType<typeof baseDeps>;
 
   beforeAll(async () => {
+    pulls.set(12, job.pull);
     const [ws] = await db
       .insert(workspaces)
       .values({
@@ -100,9 +110,11 @@ describe("analyzePr", async () => {
     expect(await db.select().from(deliveries).where(eq(deliveries.status, "sent"))).toHaveLength(1);
   });
 
-  it("ignores drafts and bots", async () => {
-    await analyzePr(deps, { ...job, pull: { ...job.pull, number: 13, draft: true } });
-    await analyzePr(deps, { ...job, pull: { ...job.pull, number: 14, user: { login: "dependabot[bot]", type: "Bot" } } });
+  it("ignores drafts, bots and closed PRs", async () => {
+    pulls.set(13, { ...job.pull, number: 13, draft: true });
+    pulls.set(14, { ...job.pull, number: 14, user: { login: "dependabot[bot]", type: "Bot" } });
+    pulls.set(15, { ...job.pull, number: 15, state: "closed" });
+    for (const n of [13, 14, 15]) await analyzePr(deps, { ...job, number: n });
     expect(await db.select().from(reports)).toHaveLength(1);
   });
 });

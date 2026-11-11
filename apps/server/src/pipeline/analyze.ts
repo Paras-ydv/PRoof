@@ -35,7 +35,9 @@ import { deliver } from "./deliver.js";
 export interface AnalyzeJob {
   installationId: number;
   repo: { id: number; fullName: string; private: boolean };
-  pull: PullPayload;
+  number: number;
+  /** The webhook's copy of the PR. The job re-fetches the PR, since queued payloads can be stale. */
+  pull?: PullPayload;
 }
 
 /** Small in-process cache: re-runs on the same commit (CI finishing, answers) reuse the index. */
@@ -70,19 +72,21 @@ export async function ensureRepo(deps: Deps, ws: Workspace, repo: AnalyzeJob["re
 
 export async function analyzePr(deps: Deps, job: AnalyzeJob): Promise<void> {
   const { db, log } = deps;
-  const { pull } = job;
-  if (pull.draft) return;
-  if (pull.user.type === "Bot") return;
-
   const [ws] = await db.select().from(workspaces).where(eq(workspaces.installationId, job.installationId)).limit(1);
   if (!ws || ws.status !== "active") return;
   const repo = await ensureRepo(deps, ws, job.repo);
   if (!repo.enabled) return;
 
-  const settings = effectiveSettings(ws, repo.settings, (err) => log.warn("Invalid stored settings, using fallback", { repo: repo.fullName, err: String(err) }));
   const [owner, name] = job.repo.fullName.split("/") as [string, string];
   const r = { owner, repo: name };
   const gh = await deps.github(job.installationId);
+  const latest = await gh.rest.pulls.get({ ...r, pull_number: job.number }).catch(() => null);
+  const pull = (latest?.data as PullPayload & { state?: string } | undefined) ?? job.pull;
+  if (!pull || (pull as { state?: string }).state === "closed") return;
+  if (pull.draft) return;
+  if (pull.user.type === "Bot") return;
+
+  const settings = effectiveSettings(ws, repo.settings, (err) => log.warn("Invalid stored settings, using fallback", { repo: repo.fullName, err: String(err) }));
   const login = pull.user.login;
 
   const [files, linkedIssues, template, ci] = await Promise.all([

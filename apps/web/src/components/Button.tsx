@@ -51,7 +51,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   );
 });
 
-/** A link styled as a button. Internal paths use the router; full URLs open in a new tab. */
+/** Paths served by the API server, not the dashboard. They must load as real pages. */
+const SERVER_PATHS = /^\/(auth|github|api)\//;
+
+/**
+ * A link styled as a button. Dashboard paths use the router; server paths (sign-in, setup)
+ * do a full page load; full URLs open in a new tab.
+ */
 export function ButtonLink({
   variant = "secondary",
   size = "md",
@@ -63,6 +69,15 @@ export function ButtonLink({
   ...rest
 }: Common & Omit<LinkProps, "to"> & { to: string }) {
   const cls = classes(variant, size, className);
+  if (SERVER_PATHS.test(to)) {
+    return (
+      <a className={cls} href={to}>
+        <Content icon={icon} trailing={trailing}>
+          {children}
+        </Content>
+      </a>
+    );
+  }
   if (/^https?:\/\//.test(to)) {
     return (
       <a className={cls} href={to} target="_blank" rel="noreferrer">

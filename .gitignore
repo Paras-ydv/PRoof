@@ -11,3 +11,7 @@ coverage/
 # Local-only design docs and plans
 .local/
 PRoof how the tool works.md
+
+# This repo uses pnpm
+package-lock.json
+yarn.lock

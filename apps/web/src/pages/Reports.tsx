@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Inbox } from "lucide-react";
+import { ArrowUpRight, Inbox } from "lucide-react";
 import { timeAgo, useLogin, useReports, useWorkspace } from "../lib/hooks";
 import { Segmented, Select } from "../components/Form";
 import { Callout, EmptyState, PageHeader, Panel, Skeleton } from "../components/Layout";
@@ -69,6 +69,9 @@ export function Reports() {
                 <th>Flags</th>
                 <th>Score</th>
                 <th className="num">Updated</th>
+                <th>
+                  <span className="visually-hidden">GitHub</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -82,13 +85,27 @@ export function Reports() {
                       </span>
                     </Link>
                   </td>
-                  <td className="muted">{r.author}</td>
+                  <td className="muted" style={{ whiteSpace: "nowrap" }}>{r.author}</td>
                   <td>{r.pending ? <Badge tone="pending">Running</Badge> : r.flags > 0 ? <Badge tone="warn">{r.flags}</Badge> : <Badge tone="pass">0</Badge>}</td>
                   <td>
                     <ScoreBar value={r.scoreFull} />
                   </td>
                   <td className="num muted" style={{ whiteSpace: "nowrap" }}>
                     {timeAgo(r.updatedAt)}
+                  </td>
+                  <td>
+                    <a
+                      className="btn btn-ghost btn-sm btn-square"
+                      href={`https://github.com/${r.repo}/pull/${r.prNumber}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`View ${r.repo} #${r.prNumber} on GitHub`}
+                      title="View on GitHub"
+                    >
+                      <span className="btn-icon">
+                        <ArrowUpRight />
+                      </span>
+                    </a>
                   </td>
                 </tr>
               ))}

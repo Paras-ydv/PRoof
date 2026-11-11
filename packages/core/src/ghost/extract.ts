@@ -54,6 +54,23 @@ export interface CallRef {
   name: string;
   /** Receiver text for member calls, e.g. "this" or "utils". */
   object?: string;
+  /** The call sits in a class that extends another, so `this`/`self` methods may be inherited. */
+  inherited?: boolean;
+}
+
+const CLASS_TYPES = new Set(["class_definition", "class_declaration", "class", "abstract_class_declaration"]);
+
+/** Whether the nearest enclosing class has a parent class (Python bases other than object, or JS/TS extends). */
+function inClassWithParent(node: Node): boolean {
+  for (let n: Node | null = node.parent; n; n = n.parent) {
+    if (!CLASS_TYPES.has(n.type)) continue;
+    if (n.type === "class_definition") {
+      const bases = n.childForFieldName("superclasses");
+      return Boolean(bases?.namedChildren.some((b) => b && b.text !== "object" && b.type !== "keyword_argument"));
+    }
+    return n.namedChildren.some((c) => c?.type === "class_heritage" && /^\s*extends\b/.test(c.text));
+  }
+  return false;
 }
 
 export interface ImportRef {
@@ -173,7 +190,9 @@ export async function analyzeFile(lang: LangId, source: string): Promise<FileAna
         const prop = m.captures.find((c) => c.name === "prop");
         const obj = m.captures.find((c) => c.name === "obj");
         if (callee) calls.push({ line: callee.node.startPosition.row + 1, name: callee.node.text });
-        else if (prop && obj) calls.push({ line: prop.node.startPosition.row + 1, name: prop.node.text, object: obj.node.text });
+        else if (prop && obj) {
+          calls.push({ line: prop.node.startPosition.row + 1, name: prop.node.text, object: obj.node.text, inherited: inClassWithParent(obj.node) });
+        }
       }
     }
 

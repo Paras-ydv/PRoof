@@ -60,7 +60,8 @@ export interface Ghost {
  * Find names on added lines that resolve nowhere.
  * Precision first: only flags what can be proven missing.
  *  - bare calls to names that aren't defined, imported, or built in
- *  - calls on this/self to methods defined nowhere in the repo
+ *  - calls on this/self to methods defined nowhere in the repo, unless the class extends another
+ *    (the method may come from a parent outside the repo, like unittest.TestCase)
  *  - calls on a local module import to members defined nowhere in the repo
  *  - named imports from a local module that the repo doesn't define
  * Calls on other objects (whose type we can't know) are never flagged.
@@ -100,7 +101,7 @@ export async function findGhosts(file: SourceFile & { patch?: string }, index: S
       continue;
     }
     if (spec.selfNames.includes(c.object)) {
-      if (!exists(c.name)) add({ path: file.path, line: c.line, name: `${c.object}.${c.name}`, why: "method not defined anywhere in the repo" });
+      if (!c.inherited && !exists(c.name)) add({ path: file.path, line: c.line, name: `${c.object}.${c.name}`, why: "method not defined anywhere in the repo" });
       continue;
     }
     const imp = bindings.get(c.object);

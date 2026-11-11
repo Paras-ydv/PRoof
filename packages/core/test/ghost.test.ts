@@ -98,6 +98,41 @@ describe("findGhosts · Python", () => {
     const ghosts = await findGhosts({ path: "mypkg/client.py", content, patch: allAdded(content) }, index);
     expect(ghosts.map((g) => g.name)).toEqual(["retry_async", "self.validate", "made_up_helper"]);
   });
+
+  it("skips self methods in classes that inherit from another class", async () => {
+    const content = [
+      "import unittest",
+      "",
+      "class TestThing(unittest.TestCase):",
+      "    def test_it(self):",
+      "        self.assertTrue(True)",
+      "",
+      "class Plain(object):",
+      "    def run(self):",
+      "        self.missing()",
+    ].join("\n");
+    const index = await buildSymbolIndex([{ path: "tests/test_thing.py", content }]);
+    const ghosts = await findGhosts({ path: "tests/test_thing.py", content, patch: allAdded(content) }, index);
+    expect(ghosts.map((g) => g.name)).toEqual(["self.missing"]);
+  });
+});
+
+describe("findGhosts · inherited TypeScript methods", () => {
+  it("skips this-calls in classes that extend another, but not ones that only implement", async () => {
+    const content = [
+      'import { Component } from "react";',
+      "interface Runner { run(): void }",
+      "export class View extends Component {",
+      "  show() { this.setState({}); }",
+      "}",
+      "export class Job implements Runner {",
+      "  run() { this.missing(); }",
+      "}",
+    ].join("\n");
+    const index = await buildSymbolIndex([{ path: "src/view.ts", content }]);
+    const ghosts = await findGhosts({ path: "src/view.ts", content, patch: allAdded(content) }, index);
+    expect(ghosts.map((g) => g.name)).toEqual(["this.missing"]);
+  });
 });
 
 describe("findGhosts · Go", () => {

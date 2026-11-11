@@ -9,3 +9,4 @@ export { sprayCheck, historyCheck, isNewcomer } from "./checks/contributor.js";
 export { customRuleCheck, externalCheck, externalCheckPayload, ExternalCheckResponse } from "./checks/custom.js";
 export { ghostCodeCheck, buildSymbolIndex, findGhosts, langForPath, type SourceFile, type Ghost } from "./ghost/index.js";
 export * from "./render/index.js";
+export * from "./claims.js";

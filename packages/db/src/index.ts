@@ -8,6 +8,6 @@ export { schema };
 export type Db = ReturnType<typeof createDb>["db"];
 
 export function createDb(url: string, opts: { max?: number } = {}) {
-  const client = postgres(url, { max: opts.max ?? 10 });
+  const client = postgres(url, { max: opts.max ?? 10, onnotice: () => {} });
   return { db: drizzle(client, { schema }), client };
 }

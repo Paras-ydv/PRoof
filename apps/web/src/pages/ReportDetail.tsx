@@ -217,7 +217,7 @@ function CheckRow({ item, data, canFeedback }: { item: ReportItem; data: Detail;
         )}
         {(flagged || item.rule) && (
           <div className="check-row-foot">
-            {flagged && item.rule && rulesUrl && (
+            {flagged && item.rule && rulesUrl && !item.rule.startsWith("custom/") && (
               <a href={`${rulesUrl}/${item.rule}.md`} target="_blank" rel="noreferrer">
                 <BookOpen /> How to fix
               </a>

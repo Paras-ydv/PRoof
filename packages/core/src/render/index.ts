@@ -32,8 +32,10 @@ const SLACK_ICON: Record<CheckStatus, string> = {
 };
 const BAND_COLOR: Record<Band, number> = { ready: 0x1f883d, "small-fixes": 0xbf8700, "needs-work": 0xcf222e };
 
-function ruleLink(ctx: RenderContext, item: ReportItem): string | undefined {
-  return item.rule ? `${ctx.rulesUrl.replace(/\/$/, "")}/${item.rule}` : undefined;
+/** Link to the rule's guide. Custom rules have no page: their how-to text is already in the evidence. */
+export function ruleLink(rulesUrl: string, rule: string | undefined): string | undefined {
+  if (!rule || rule.startsWith("custom/")) return undefined;
+  return `${rulesUrl.replace(/\/$/, "")}/${rule}.md`;
 }
 
 function points(item: ReportItem): string {
@@ -62,7 +64,7 @@ export function renderGithub(report: Report, ctx: RenderContext): string {
   if (items.length) {
     lines.push("", "| | Check | Result | Points |", "|:-:|---|---|--:|");
     for (const i of items) {
-      const link = ruleLink(ctx, i);
+      const link = ruleLink(ctx.rulesUrl, i.rule);
       const fix = needsFix(i) && link ? ` · [How to fix](${link})` : "";
       lines.push(`| ${ICON[i.status]} | ${cell(i.title)} | ${cell(i.summary)}${fix} | ${points(i)} |`);
     }

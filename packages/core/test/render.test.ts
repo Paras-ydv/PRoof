@@ -48,7 +48,7 @@ describe("renderGithub", () => {
   it("shows score, rows, fix links and the newcomer note", () => {
     expect(md).toContain("### PRoof · 76/100 · Small fixes");
     expect(md).toContain("| ✅ | Linked issue | Linked to #4 | 15/15 |");
-    expect(md).toContain("[How to fix](https://proof.example/rules/tests)");
+    expect(md).toContain("[How to fix](https://proof.example/rules/tests.md)");
     expect(md).toContain("Thanks for your contribution, @dana!");
     expect(md).toContain("`src/a.ts`");
   });

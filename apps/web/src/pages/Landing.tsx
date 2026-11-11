@@ -20,6 +20,7 @@ import { DEMO, signInUrl } from "../api/client";
 import { useMe, useMeta } from "../lib/hooks";
 import { ButtonLink } from "../components/Button";
 import { Logo } from "../components/Logo";
+import { HeroCollage } from "./HeroCollage";
 import { ProductTour } from "./ProductTour";
 import "./landing.css";
 
@@ -33,53 +34,56 @@ export function Landing() {
 
   return (
     <div className="lp">
-      <header className="lp-nav">
-        <div className="lp-wrap lp-nav-inner">
-          <Link to="/" aria-label="PRoof home" className="lp-logo">
-            <Logo size={24} />
-          </Link>
-          <nav className="lp-links" aria-label="Page">
-            <a href="#how">How it works</a>
-            <a href="#checks">What it checks</a>
-            <a href="#trust">Open source</a>
-          </nav>
-          <div className="lp-nav-actions">
-            {!signedIn && !DEMO && (
-              <a className="lp-signin" href={signInUrl("/workspaces")}>
-                Sign in
-              </a>
-            )}
-            <ButtonLink to={cta} variant="primary" size="sm">
-              {signedIn ? "Open dashboard" : "Get started"}
-            </ButtonLink>
+      <div className="lp-frame-wrap">
+        <section className="lp-frame">
+          <div className="lp-grid" aria-hidden />
+          <HeroCollage />
+          <header className="lp-pill">
+            <Link to="/" aria-label="PRoof home" className="lp-logo">
+              <Logo size={22} />
+            </Link>
+            <nav className="lp-links" aria-label="Page">
+              <a href="#tour">Product</a>
+              <a href="#how">How it works</a>
+              <a href="#checks">Checks</a>
+              <a href="#trust">Open source</a>
+            </nav>
+            <div className="lp-nav-actions">
+              {!signedIn && !DEMO && (
+                <a className="lp-signin" href={signInUrl("/workspaces")}>
+                  Sign in
+                </a>
+              )}
+              <ButtonLink to={cta} variant="primary" size="sm">
+                {signedIn ? "Open dashboard" : "Get started"}
+              </ButtonLink>
+            </div>
+          </header>
+          <div className="lp-hero-center">
+            <p className="lp-kicker">
+              <span className="lp-dot" /> For open-source maintainers
+            </p>
+            <h1 className="lp-title">
+              Know which PRs are ready <span>before you open them.</span>
+            </h1>
+            <p className="lp-lede">A plain summary, a readiness score, and the exact line behind every flag. You stay the one who decides.</p>
+            <div className="lp-cta">
+              <ButtonLink to={cta} variant="primary" trailing={<ArrowRight />}>
+                {ctaLabel}
+              </ButtonLink>
+              {meta.data?.repoUrl && (
+                <ButtonLink to={meta.data.repoUrl} variant="secondary" icon={<BookOpen />}>
+                  Read the source
+                </ButtonLink>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </section>
+      </div>
 
       <main>
-        <section className="lp-hero">
+        <section className="lp-section lp-tour" id="tour">
           <div className="lp-wrap">
-            <div className="lp-hero-text">
-              <p className="lp-kicker">
-                <span className="lp-dot" /> For open-source maintainers
-              </p>
-              <h1 className="lp-title">Know which pull requests are ready before you open them.</h1>
-              <div className="lp-hero-row">
-                <p className="lp-lede">
-                  PRoof reads every PR the moment it lands: a plain summary, a readiness score, and the exact line behind each flag. You stay the one who decides.
-                </p>
-                <div className="lp-cta">
-                  <ButtonLink to={cta} variant="primary" trailing={<ArrowRight />}>
-                    {ctaLabel}
-                  </ButtonLink>
-                  {meta.data?.repoUrl && (
-                    <ButtonLink to={meta.data.repoUrl} variant="secondary" icon={<BookOpen />}>
-                      Read the source
-                    </ButtonLink>
-                  )}
-                </div>
-              </div>
-            </div>
             <ProductTour />
           </div>
         </section>

@@ -10,31 +10,60 @@
   padding-right: max(20px, env(safe-area-inset-right, 0px));
 }
 
-/* Nav */
-.lp-nav {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 20;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+/* Framed hero: one rounded surface inset from the window, holding the nav and headline. */
+.lp-frame-wrap {
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px));
 }
-.lp-nav-inner {
+.lp-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: min(880px, calc(100vh - 24px));
+  padding: 120px 24px 96px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: radial-gradient(ellipse 70% 60% at 50% 45%, color-mix(in srgb, var(--accent) 7%, var(--bg)), var(--bg) 70%);
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Faint dot grid: the canvas the fragments sit on */
+.lp-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(color-mix(in srgb, var(--text) 13%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* Pill nav, floating at the top of the frame */
+.lp-pill {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 5;
   display: flex;
   align-items: center;
   gap: 24px;
-  height: 58px;
+  width: min(840px, calc(100% - 32px));
+  height: 52px;
+  padding: 0 8px 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
 }
+.lp-logo,
 .lp-logo:hover {
-  text-decoration: none;
-}
-.lp-logo {
   color: var(--text);
+  text-decoration: none;
 }
 .lp-links {
   display: flex;
   gap: 22px;
-  margin-left: 12px;
+  margin: 0 auto;
 }
 .lp-links a,
 .lp-signin {
@@ -49,25 +78,32 @@
 .lp-nav-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-left: auto;
+  gap: 14px;
+}
+.lp-pill .btn {
+  --h: 36px;
+  border-radius: 999px;
+  padding: 0 16px;
 }
 
-/* Hero: headline, then the product itself at full width */
-.lp-hero {
-  padding: 80px 0 72px;
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-}
-.lp-hero-text {
+/* Centred headline */
+.lp-hero-center {
+  position: relative;
+  z-index: 3;
   display: grid;
-  gap: 22px;
-  margin-bottom: 56px;
+  justify-items: center;
+  gap: 20px;
+  max-width: 760px;
+  text-align: center;
 }
 .lp-kicker {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
   color: var(--text-2);
   font-size: var(--text-sm);
   font-weight: 560;
@@ -80,21 +116,16 @@
   box-shadow: 0 0 0 4px var(--pass-soft);
 }
 .lp-title {
-  max-width: 17ch;
-  font-size: clamp(38px, 5.6vw, 66px);
+  font-size: clamp(38px, 6vw, 72px);
   font-weight: 680;
   line-height: 1.02;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
 }
-.lp-hero-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px 48px;
+.lp-title span {
+  color: var(--text-3);
 }
 .lp-lede {
-  max-width: 52ch;
+  max-width: 50ch;
   color: var(--text-2);
   font-size: 17px;
   line-height: 1.55;
@@ -102,12 +133,310 @@
 .lp-cta {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
+  margin-top: 4px;
 }
 .lp-cta .btn {
-  --h: 40px;
-  padding: 0 16px;
+  --h: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
   font-size: var(--text-md);
+}
+.lp-hero-center > * {
+  animation: lp-rise 600ms var(--ease) both;
+}
+.lp-hero-center > :nth-child(2) {
+  animation-delay: 60ms;
+}
+.lp-hero-center > :nth-child(3) {
+  animation-delay: 120ms;
+}
+.lp-hero-center > :nth-child(4) {
+  animation-delay: 180ms;
+}
+@keyframes lp-rise {
+  from {
+    opacity: 0.001;
+    translate: 0 10px;
+    filter: blur(4px);
+  }
+}
+
+/* Fragments of the product around the headline */
+.collage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Clear the centre so the headline reads; fragments fade in toward the edges */
+  mask-image: radial-gradient(ellipse 42% 40% at 50% 50%, transparent 30%, #000 100%);
+}
+.frag {
+  position: absolute;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  color: var(--text);
+  overflow: hidden;
+}
+.frag-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+.frag-mono,
+.frag-code,
+.frag-cmd {
+  font-family: var(--font-mono);
+}
+.frag-title {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.frag-sub {
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+.frag-pts {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.frag-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 650;
+}
+.frag-avatar-bot {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-radius: 6px;
+}
+
+.frag-pr {
+  top: 13%;
+  left: 4%;
+  width: 330px;
+  rotate: -2deg;
+}
+.frag-pr-body {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.frag-diff {
+  top: 40%;
+  left: 2%;
+  width: 380px;
+  rotate: 1.5deg;
+}
+.frag-code {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--text-2);
+  white-space: pre;
+}
+.frag-code .ln {
+  display: inline-block;
+  width: 34px;
+  padding-right: 10px;
+  text-align: right;
+  color: var(--text-4);
+}
+.frag-code .add {
+  color: var(--pass);
+}
+.frag-code .flag {
+  color: var(--fail);
+  background: var(--fail-soft);
+}
+.frag-flag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--fail-soft);
+  color: var(--text-2);
+}
+
+.frag-check {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  gap: 10px;
+  top: 14%;
+  right: 5%;
+  width: 300px;
+  padding: 12px;
+  rotate: 2deg;
+}
+.frag-check .coderef {
+  margin-top: 6px;
+}
+
+.frag-question {
+  display: grid;
+  gap: 10px;
+  bottom: 9%;
+  left: 7%;
+  width: 320px;
+  padding: 12px;
+  rotate: -1.5deg;
+}
+.frag-q {
+  display: flex;
+  gap: 9px;
+}
+.frag-q p {
+  color: var(--text-2);
+}
+.frag-q-reply {
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+.frag-who {
+  font-weight: 600;
+  font-size: var(--text-xs);
+}
+.frag-who span {
+  color: var(--text-4);
+  font-weight: 450;
+}
+.frag-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pass-soft);
+  color: var(--pass);
+  font-size: var(--text-xs);
+  font-weight: 560;
+}
+
+.frag-slack {
+  right: 3%;
+  bottom: 14%;
+  width: 290px;
+  rotate: -2deg;
+}
+.frag-slack-body {
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+  padding: 12px;
+}
+.frag-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-2);
+}
+
+.frag-claim {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  top: 47%;
+  right: 1%;
+  padding: 10px 12px;
+  rotate: 1deg;
+}
+.frag-cmd {
+  color: var(--accent-text);
+}
+
+.frag-mode {
+  display: flex;
+  gap: 2px;
+  bottom: 5%;
+  left: 43%;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--surface-2);
+}
+.frag-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+.frag-seg.is-shadow {
+  background: var(--surface);
+  color: var(--private);
+  box-shadow: var(--shadow-xs);
+}
+
+.frag-ready {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  top: 10%;
+  left: 42%;
+  padding: 9px 12px;
+  rotate: -1deg;
+}
+
+@media (max-width: 1100px) {
+  .frag-diff,
+  .frag-claim {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .lp-links,
+  .lp-signin {
+    display: none;
+  }
+  .lp-pill {
+    width: calc(100% - 24px);
+    justify-content: space-between;
+  }
+  .lp-frame {
+    padding: 104px 16px 220px;
+  }
+  .frag-pr,
+  .frag-check,
+  .frag-question,
+  .frag-ready,
+  .frag-mode {
+    display: none;
+  }
+  .frag-slack {
+    left: 50%;
+    right: auto;
+    bottom: 24px;
+    translate: -50% 0;
+  }
+  .collage {
+    mask-image: linear-gradient(to bottom, transparent 55%, #000 80%);
+  }
+}
+
+.lp-tour {
+  padding-top: 72px;
 }
 
 /* Product tour */
@@ -690,9 +1019,6 @@
 }
 
 @media (max-width: 900px) {
-  .lp-hero {
-    padding: 48px 0;
-  }
   .tour-body {
     grid-template-columns: minmax(0, 1fr);
     height: auto;
@@ -726,9 +1052,6 @@
   }
   .lp-channels {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .lp-links {
-    display: none;
   }
   .lp-section,
   .lp-final {

@@ -95,7 +95,8 @@ export function setupRoutes(deps: Deps) {
 
     const id = Number(c.req.query("installation_id"));
     if (!Number.isInteger(id) || id <= 0) return c.redirect(`${deps.env.APP_URL}/`);
-    const visible = await visibleInstallations(deps, user);
+    // Fresh lookup: a list cached before the install wouldn't include it yet.
+    const visible = await visibleInstallations(deps, user, { fresh: true });
     if (!visible.includes(id)) return c.redirect(`${deps.env.APP_URL}/setup/not-yours`);
 
     // The installation webhook normally creates the workspace; if it hasn't arrived yet, read it from GitHub.

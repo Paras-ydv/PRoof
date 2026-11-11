@@ -24,8 +24,9 @@ export function clearAccessCache() {
   cache.clear();
 }
 
-/** Installation ids this user can see on GitHub. */
-export function visibleInstallations(deps: Deps, user: SessionUser): Promise<number[]> {
+/** Installation ids this user can see on GitHub. `fresh` skips the cache, e.g. right after an install. */
+export function visibleInstallations(deps: Deps, user: SessionUser, opts: { fresh?: boolean } = {}): Promise<number[]> {
+  if (opts.fresh) cache.delete(`inst:${user.tokenHash}`);
   return cached(`inst:${user.tokenHash}`, async () => {
     const gh = deps.userGithub(user.githubToken);
     const all = await gh.paginate(gh.rest.apps.listInstallationsForAuthenticatedUser, { per_page: 100 });

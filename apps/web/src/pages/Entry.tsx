@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
-import { ArrowRight, EyeOff, FileSearch, Hourglass, LogIn, Plus, ShieldCheck, UserX } from "lucide-react";
+import { ArrowRight, EyeOff, FileSearch, LogIn, Plus, ShieldCheck } from "lucide-react";
 import { ApiError, DEMO, signInUrl } from "../api/client";
 import { useMe, useMeta, useWorkspaces } from "../lib/hooks";
 import { Button, ButtonLink } from "../components/Button";
@@ -113,18 +113,17 @@ export function SetupStatus({ kind }: { kind: "requested" | "not-yours" }) {
         <Logo size={26} />
         {kind === "requested" ? (
           <Callout tone="info" title="Request sent to your org owners">
-            <span className="row">
-              <Hourglass size={14} />
-              GitHub has asked an owner of the organization to approve PRoof. You'll get access as soon as they install it.
-            </span>
+            GitHub has asked an owner of the organization to approve PRoof. You'll get access as soon as they install it.
           </Callout>
         ) : (
           <Callout tone="warn" title="This installation isn't linked to your GitHub account">
-            <span className="row">
-              <UserX size={14} />
-              Sign in with an account that has access to the organization, or ask an org owner to install PRoof.
-            </span>
+            Sign in with an account that has access to the organization, or ask an org owner to install PRoof.
           </Callout>
+        )}
+        {kind === "not-yours" && (
+          <ButtonLink to="/auth/github/login?return_to=/workspaces" variant="primary">
+            Sign in with another account
+          </ButtonLink>
         )}
         <ButtonLink to="/workspaces" variant="secondary">
           Back to workspaces

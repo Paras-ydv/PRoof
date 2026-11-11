@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FolderGit2, Lock, Plus, SlidersHorizontal } from "lucide-react";
+import { FolderGit2, Lock, Plus, RefreshCw, SlidersHorizontal } from "lucide-react";
 import { api, ApiError } from "../api/client";
 import type { Repo, Settings, SettingsPatch } from "../api/types";
 import { useWorkspace, useWorkspaceMutation } from "../lib/hooks";
@@ -16,6 +16,13 @@ type Choice = "inherit" | "off" | "shadow" | "live";
 export function Repos() {
   const ws = useWorkspace();
   const [editing, setEditing] = useState<Repo | null>(null);
+  const toast = useToast();
+  const sync = useWorkspaceMutation((login, _: void) => api<{ count: number }>(`/workspaces/${login}/repos/sync`, { method: "POST" }));
+  const refresh = () =>
+    sync.mutate(undefined, {
+      onSuccess: (r) => toast("pass", `Up to date with GitHub: ${(r as { count: number }).count} repositories`),
+      onError: (e) => toast("fail", e instanceof ApiError ? e.message : "Couldn't refresh from GitHub"),
+    });
   const toggle = useWorkspaceMutation((login, v: { id: string; enabled: boolean }) => api(`/workspaces/${login}/repos/${v.id}`, { method: "PATCH", body: { enabled: v.enabled } }));
 
   if (ws.isLoading || !ws.data) return <Skeleton height={300} radius={11} />;
@@ -27,15 +34,20 @@ export function Repos() {
         title="Repositories"
         description="Repositories PRoof can see, from your GitHub installation. Pause one here, or change which repos are included on GitHub."
         actions={
-          <ButtonLink to={workspace.installUrl} icon={<Plus />}>
-            Add repositories on GitHub
-          </ButtonLink>
+          <>
+            <Button variant="ghost" icon={<RefreshCw />} loading={sync.isPending} onClick={refresh}>
+              Refresh from GitHub
+            </Button>
+            <ButtonLink to={workspace.installUrl} icon={<Plus />}>
+              Add repositories on GitHub
+            </ButtonLink>
+          </>
         }
       />
       <Panel flush>
         {repos.length === 0 ? (
           <EmptyState icon={<FolderGit2 />} title="No repositories yet">
-            Repositories appear here as soon as GitHub tells PRoof about them.
+            Repositories appear here as soon as GitHub tells PRoof about them. If you just installed PRoof, use Refresh from GitHub.
           </EmptyState>
         ) : (
           <table className="table">

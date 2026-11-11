@@ -328,6 +328,7 @@ export async function demoRequest<T>(path: string, init: { method?: string; body
     destinations = destinations.filter((d) => d.id !== dest[1]);
     return ok;
   }
+  if (p === "/workspaces/lumen-labs/repos/sync" && method === "POST") return { ok: true, count: repos.length } as T;
   if (p === "/workspaces/lumen-labs/reports") return { reports: rows() } as T;
   const rep = p?.match(/^\/workspaces\/lumen-labs\/reports\/([\w-]+)$/);
   if (rep) {

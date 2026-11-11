@@ -31,7 +31,7 @@ export async function deliver(deps: Deps, input: DeliverInput): Promise<void> {
     url: pull.html_url,
     author: pull.user.login,
     rulesUrl: deps.env.RULES_URL,
-    dashboardUrl: `${deps.env.APP_URL}/reports/${input.reportId}`,
+    dashboardUrl: `${deps.env.APP_URL}/w/${input.ws.login}/reports/${input.reportId}`,
   };
 
   const dests = await db

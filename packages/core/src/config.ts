@@ -21,6 +21,48 @@ export const Weights = z.object({
 });
 export type Weights = z.infer<typeof Weights>;
 
+const Slug = z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/, "Use lowercase letters, numbers and dashes");
+
+/** The condition a custom rule checks. */
+export const RuleCondition = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("titleMatches"), pattern: z.string().min(1).max(200) }),
+  z.object({ type: z.literal("bodyContains"), text: z.string().min(1).max(200) }),
+  z.object({ type: z.literal("requireLabel"), anyOf: z.array(z.string()).min(1) }),
+  z.object({ type: z.literal("forbidPaths"), globs: z.array(z.string()).min(1) }),
+  z.object({ type: z.literal("pathsNeedTests"), globs: z.array(z.string()).min(1) }),
+  z.object({ type: z.literal("maxFiles"), max: z.number().int().min(1) }),
+]);
+export type RuleCondition = z.infer<typeof RuleCondition>;
+
+/** An org-defined rule, configured in the dashboard. No code needed. */
+export const CustomRule = z.object({
+  id: Slug,
+  title: z.string().min(1).max(60),
+  mode: Mode,
+  /** Scored rules add to the readiness score; context rules only show evidence to maintainers. */
+  kind: z.enum(["scored", "context"]),
+  weight: z.number().min(0).max(100),
+  condition: RuleCondition,
+  /** Shown to the contributor when the rule isn't met. */
+  howToFix: z.string().max(500),
+});
+export type CustomRule = z.infer<typeof CustomRule>;
+
+/**
+ * A check run by the org's own service. PRoof POSTs a signed PR summary to `url`
+ * and shows the response as a row on the card.
+ */
+export const ExternalCheck = z.object({
+  id: Slug,
+  title: z.string().min(1).max(60),
+  mode: Mode,
+  kind: z.enum(["scored", "context"]),
+  weight: z.number().min(0).max(100),
+  url: z.string().url().refine((u) => u.startsWith("https://"), "Must use https"),
+  timeoutMs: z.number().int().min(500).max(15000),
+});
+export type ExternalCheck = z.infer<typeof ExternalCheck>;
+
 export const Settings = z.object({
   checks: z.object({
     issue: Mode,
@@ -67,6 +109,8 @@ export const Settings = z.object({
   }),
   /** Path patterns that count as tests. Extends the built-in list. */
   testPatterns: z.array(z.string()),
+  customRules: z.array(CustomRule).max(50),
+  externalChecks: z.array(ExternalCheck).max(10),
 });
 export type Settings = z.infer<typeof Settings>;
 
@@ -95,7 +139,11 @@ export const DEFAULT_SETTINGS: Settings = {
   claims: { remindAfterDays: 7, releaseAfterDays: 14, assignOnClaim: true },
   skipLabels: { issue: "proof:no-issue-ok", size: "proof:large-ok" },
   testPatterns: [],
+  customRules: [],
+  externalChecks: [],
 };
+
+const BUILTIN_IDS = new Set(["issue", "template", "ci", "tests", "ghostcode", "size", "questions", "spray", "history", "claims"]);
 
 /** A partial settings object, as stored for an org default or a repo override. */
 export type SettingsPatch = DeepPartial<Settings>;
@@ -130,5 +178,8 @@ export function resolveSettings(orgPatch: SettingsPatch = {}, repoPatch: Setting
   if (settings.thresholds.sizeHardLimit <= settings.thresholds.sizeSoftLimit) {
     throw new Error("thresholds.sizeHardLimit must be greater than thresholds.sizeSoftLimit");
   }
+  const ids = [...settings.customRules, ...settings.externalChecks].map((c) => c.id);
+  const dupe = ids.find((id, i) => ids.indexOf(id) !== i || BUILTIN_IDS.has(id));
+  if (dupe) throw new Error(`Check id "${dupe}" is already in use`);
   return settings;
 }

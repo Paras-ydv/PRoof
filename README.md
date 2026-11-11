@@ -55,7 +55,7 @@ pnpm install
 docker compose up -d postgres        # Postgres on localhost:5433
 cp .env.example .env                 # then fill in the GitHub App values
 pnpm db:migrate
-pnpm dev                             # API on :3000, dashboard on :5173
+pnpm dev                             # API on :3100, dashboard on :5173
 ```
 
 To explore the dashboard without a GitHub App, run it on sample data:

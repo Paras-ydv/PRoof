@@ -2,12 +2,12 @@ import { z } from "zod";
 
 const Env = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  PORT: z.coerce.number().int().default(3000),
+  PORT: z.coerce.number().int().default(3100),
   DATABASE_URL: z.string().url().default("postgres://proof:proof@localhost:5433/proof"),
   /** Public URL of the dashboard (used for links and OAuth redirects). */
   APP_URL: z.string().url().default("http://localhost:5173"),
   /** Public URL of this API server (used for the GitHub setup URL and OAuth callback). */
-  API_URL: z.string().url().default("http://localhost:3000"),
+  API_URL: z.string().url().default("http://localhost:3100"),
   /** The public source repository, used for "How to fix" docs and Discussions links. */
   REPO_URL: z.string().url().default("https://github.com/proof-dev/proof"),
   /** Where the "How to fix" rule docs live. Defaults to docs/rules in REPO_URL. */

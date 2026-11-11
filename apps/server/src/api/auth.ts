@@ -20,6 +20,12 @@ export function authRoutes(deps: Deps) {
 
   /** Start GitHub sign-in. */
   app.get("/github/login", (c) => {
+    if (!deps.env.GITHUB_CLIENT_ID || !deps.env.GITHUB_CLIENT_SECRET) {
+      return c.text(
+        "Sign-in isn't set up on this server yet. Create a GitHub App (see github-app.yml), then set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in .env and restart the server.",
+        503,
+      );
+    }
     const state = randomToken(16);
     const returnTo = safeReturnTo(c.req.query("return_to"));
     setCookie(c, STATE_COOKIE, `${state}|${returnTo}`, { httpOnly: true, secure, sameSite: "Lax", path: "/", maxAge: 600 });

@@ -130,3 +130,15 @@ describe("dashboard API", async () => {
     expect(res.status).toBe(201);
   });
 });
+
+describe("sign-in without a GitHub App", () => {
+  it("explains what to configure instead of redirecting", async () => {
+    const { db, client } = await testDb();
+    const deps = baseDeps(db);
+    deps.env.GITHUB_CLIENT_ID = "";
+    const res = await createApp(deps, async () => true).request("/auth/github/login");
+    expect(res.status).toBe(503);
+    expect(await res.text()).toContain("GITHUB_CLIENT_ID");
+    await client.end();
+  });
+});

@@ -22,7 +22,13 @@ export const silent = { info() {}, warn() {}, error() {} };
 
 export function baseDeps(db: Deps["db"], over: Partial<Deps> = {}): Deps {
   return {
-    env: loadEnv({ NODE_ENV: "test", APP_URL: "https://app.example", RULES_URL: "https://rules.example" } as NodeJS.ProcessEnv),
+    env: loadEnv({
+      NODE_ENV: "test",
+      APP_URL: "https://app.example",
+      RULES_URL: "https://rules.example",
+      GITHUB_CLIENT_ID: "test-client",
+      GITHUB_CLIENT_SECRET: "test-secret",
+    } as NodeJS.ProcessEnv),
     db,
     vault: new Vault(randomBytes(32).toString("base64")),
     log: silent,

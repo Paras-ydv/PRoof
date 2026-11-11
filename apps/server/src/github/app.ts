@@ -3,8 +3,12 @@ import type { Env } from "../env.js";
 
 export type { Octokit };
 
-/** The PRoof GitHub App. Installation clients act on repos; user clients act as a signed-in maintainer. */
-export function createGithubApp(env: Env): App {
+/**
+ * The PRoof GitHub App. Installation clients act on repos; user clients act as a signed-in maintainer.
+ * Returns null until the app's credentials are configured, so the server can still start.
+ */
+export function createGithubApp(env: Env): App | null {
+  if (!env.GITHUB_APP_ID || !env.GITHUB_PRIVATE_KEY.includes("PRIVATE KEY")) return null;
   return new App({
     appId: env.GITHUB_APP_ID,
     privateKey: env.GITHUB_PRIVATE_KEY,

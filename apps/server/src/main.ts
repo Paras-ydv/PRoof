@@ -27,6 +27,8 @@ await runMigrations(env.DATABASE_URL);
 const { db, client } = createDb(env.DATABASE_URL);
 const vault = new Vault(env.ENCRYPTION_KEY);
 const github = createGithubApp(env);
+const NOT_CONFIGURED = "The GitHub App isn't configured. Set GITHUB_APP_ID, GITHUB_PRIVATE_KEY and GITHUB_WEBHOOK_SECRET in .env (see github-app.yml).";
+if (!github) log.warn(NOT_CONFIGURED);
 const boss = await startQueue(env.DATABASE_URL);
 
 const deps: Deps = {
@@ -35,10 +37,14 @@ const deps: Deps = {
   vault,
   log,
   channels: createChannels({ smtpUrl: env.SMTP_URL, emailFrom: env.EMAIL_FROM }),
-  github: (id) => github.getInstallationOctokit(id),
+  github: (id) => (github ? github.getInstallationOctokit(id) : Promise.reject(new Error(NOT_CONFIGURED))),
   userGithub: userClient,
-  exchangeCode: async (code) => (await github.oauth.createToken({ code })).authentication.token,
+  exchangeCode: async (code) => {
+    if (!github) throw new Error(NOT_CONFIGURED);
+    return (await github.oauth.createToken({ code })).authentication.token;
+  },
   getInstallation: async (id) => {
+    if (!github) return null;
     try {
       const { data } = await github.octokit.rest.apps.getInstallation({ installation_id: id });
       const account = data.account as { id: number; login?: string; slug?: string; type?: string } | null;
@@ -59,7 +65,7 @@ await work<ClaimCommandJob>(boss, "claim.command", (job) => handleClaimCommand(d
 await work(boss, "claims.sweep", () => sweepClaims(deps), 1);
 await boss.schedule("claims.sweep", "17 * * * *");
 
-const app = createApp(deps, (body, signature) => github.webhooks.verify(body, signature));
+const app = createApp(deps, async (body, signature) => (github ? github.webhooks.verify(body, signature) : false));
 
 // In production the dashboard is served from the same origin, so cookies stay first-party.
 const webDist = fileURLToPath(new URL("../../web/dist", import.meta.url));

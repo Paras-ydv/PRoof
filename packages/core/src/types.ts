@@ -117,8 +117,8 @@ export interface CheckResult {
   /** One-line summary shown on the card. */
   summary: string;
   evidence: Evidence[];
-  /** Link to the rule and how to fix it. */
-  fixUrl?: string;
+  /** Id of the rule doc that explains this check and how to fix it. Renderers turn it into a link. */
+  rule?: string;
 }
 
 export interface CheckInput {

@@ -40,6 +40,9 @@ importers:
       tar:
         specifier: ^7.5.22
         version: 7.5.22
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -50,9 +53,6 @@ importers:
       '@types/nodemailer':
         specifier: ^8.0.2
         version: 8.0.2
-      tsx:
-        specifier: ^4.23.15
-        version: 4.23.15
       typescript:
         specifier: ^7.0.2
         version: 7.0.2

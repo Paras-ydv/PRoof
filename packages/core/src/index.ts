@@ -10,3 +10,4 @@ export { customRuleCheck, externalCheck, externalCheckPayload, ExternalCheckResp
 export { ghostCodeCheck, buildSymbolIndex, findGhosts, langForPath, type SourceFile, type Ghost } from "./ghost/index.js";
 export * from "./render/index.js";
 export * from "./claims.js";
+export * from "./ai/prompts.js";

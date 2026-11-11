@@ -33,6 +33,8 @@ export function authRoutes(deps: Deps) {
     url.searchParams.set("client_id", deps.env.GITHUB_CLIENT_ID);
     url.searchParams.set("redirect_uri", `${deps.env.API_URL}/auth/github/callback`);
     url.searchParams.set("state", state);
+    // Let people signed into several GitHub accounts choose which one to use.
+    url.searchParams.set("prompt", "select_account");
     return c.redirect(url.toString());
   });
 

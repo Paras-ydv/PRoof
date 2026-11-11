@@ -1,0 +1,120 @@
+.status-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+}
+.status-icon svg {
+  width: 62%;
+  height: 62%;
+}
+
+.s-pass {
+  color: var(--pass);
+  background: var(--pass-soft);
+}
+.s-warn {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+.s-fail {
+  color: var(--fail);
+  background: var(--fail-soft);
+}
+.s-pending {
+  color: var(--pending);
+  background: var(--pending-soft);
+}
+.s-na {
+  color: var(--na);
+  background: var(--na-soft);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 7px 0 6px;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 560;
+  white-space: nowrap;
+}
+.pill svg {
+  width: 11px;
+  height: 11px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.tag svg {
+  width: 11px;
+  height: 11px;
+}
+.tag-private {
+  color: var(--private);
+  background: var(--private-soft);
+  border-color: transparent;
+}
+.tag-live {
+  color: var(--pass);
+  background: var(--pass-soft);
+  border-color: transparent;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 560;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.b-neutral {
+  background: var(--surface-2);
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.b-accent {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.b-private {
+  background: var(--private-soft);
+  color: var(--private);
+}
+.b-pass {
+  background: var(--pass-soft);
+  color: var(--pass);
+}
+.b-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.b-fail {
+  background: var(--fail-soft);
+  color: var(--fail);
+}
+.b-pending {
+  background: var(--pending-soft);
+  color: var(--pending);
+}
+.b-na {
+  background: var(--na-soft);
+  color: var(--na);
+}

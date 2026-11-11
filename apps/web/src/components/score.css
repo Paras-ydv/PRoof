@@ -1,0 +1,89 @@
+.dial {
+  --c: var(--text-4);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+.dial svg {
+  position: absolute;
+  inset: 0;
+}
+.dial-track {
+  stroke: var(--surface-3);
+}
+.dial-value {
+  stroke: var(--c);
+  transition: stroke-dasharray 600ms var(--ease);
+}
+.dial-number {
+  position: relative;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.band-ready {
+  --c: var(--pass);
+}
+.band-small-fixes {
+  --c: var(--warn);
+}
+.band-needs-work {
+  --c: var(--fail);
+}
+
+.score-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.score-bar-num {
+  min-width: 2ch;
+  text-align: right;
+  font-weight: 600;
+}
+.score-bar-track {
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.score-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c);
+}
+.score-bar-empty {
+  color: var(--text-4);
+}
+
+.coderef {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coderef-link:hover {
+  color: var(--accent-text);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.coderef svg {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  opacity: 0.6;
+}

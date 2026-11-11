@@ -350,3 +350,35 @@
     translate: 0 8px;
   }
 }
+
+/* Small print inside dialogs */
+.dialog-note {
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}
+.dialog-alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}
+.dialog-alt a,
+.dialog-alt-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.dialog-alt svg {
+  width: 13px;
+  height: 13px;
+}
+.dialog-alt-email {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  user-select: all;
+}

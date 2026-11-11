@@ -130,7 +130,7 @@ function WorkspaceSwitcher({ current }: { current: string }) {
         className="ws-switch-select"
         aria-label="Switch workspace"
         value={current}
-        onChange={(e) => (e.target.value === "__add" ? navigate("/") : navigate(`/w/${e.target.value}`))}
+        onChange={(e) => (e.target.value === "__add" ? navigate("/workspaces") : navigate(`/w/${e.target.value}`))}
       >
         <option value={current}>{current}</option>
         {others.map((w) => (
@@ -180,7 +180,7 @@ function UserRow() {
         title="Sign out"
         onClick={async () => {
           await signOut();
-          navigate("/signin");
+          navigate("/");
         }}
       >
         <LogOut />

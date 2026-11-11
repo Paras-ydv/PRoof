@@ -11,6 +11,7 @@ import { useMe } from "./lib/hooks";
 import { AppShell } from "./components/AppShell";
 import { Skeleton, ToastProvider } from "./components/Layout";
 import { Home, SetupStatus, SignIn } from "./pages/Entry";
+import { Landing } from "./pages/Landing";
 import { Overview } from "./pages/Overview";
 import { Reports } from "./pages/Reports";
 import { ReportDetail } from "./pages/ReportDetail";
@@ -54,8 +55,9 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/signin" element={<SignIn />} />
             <Route path="/setup/requested" element={<SetupStatus kind="requested" />} />
             <Route path="/setup/not-yours" element={<SetupStatus kind="not-yours" />} />
+            <Route path="/" element={<Landing />} />
             <Route
-              path="/"
+              path="/workspaces"
               element={
                 <RequireUser>
                   <Home />

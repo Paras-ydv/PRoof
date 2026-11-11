@@ -1,4 +1,4 @@
-import { Navigate, useNavigate, useSearchParams } from "react-router";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
 import { ArrowRight, EyeOff, FileSearch, Hourglass, LogIn, Plus, ShieldCheck, UserX } from "lucide-react";
 import { ApiError, DEMO, signInUrl } from "../api/client";
 import { useMe, useMeta, useWorkspaces } from "../lib/hooks";
@@ -10,11 +10,13 @@ import "./pages.css";
 export function SignIn() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const returnTo = params.get("return_to") ?? "/";
+  const returnTo = params.get("return_to") ?? "/workspaces";
   return (
     <div className="centered">
       <div className="centered-card">
-        <Logo size={28} />
+        <Link to="/" aria-label="PRoof home" style={{ color: "var(--text)" }}>
+          <Logo size={28} />
+        </Link>
         <div className="signin-hero">
           <h1 className="signin-title">Review the PRs that are ready.</h1>
           <p className="signin-lede">PRoof checks every pull request before you open it and shows you the evidence, not a verdict.</p>
@@ -122,7 +124,7 @@ export function SetupStatus({ kind }: { kind: "requested" | "not-yours" }) {
             </span>
           </Callout>
         )}
-        <ButtonLink to="/" variant="secondary">
+        <ButtonLink to="/workspaces" variant="secondary">
           Back to workspaces
         </ButtonLink>
       </div>

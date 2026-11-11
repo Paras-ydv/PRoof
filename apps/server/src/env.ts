@@ -8,8 +8,10 @@ const Env = z.object({
   APP_URL: z.string().url().default("http://localhost:5173"),
   /** Public URL of this API server (used for the GitHub setup URL and OAuth callback). */
   API_URL: z.string().url().default("http://localhost:3000"),
-  /** Where the "How to fix" rule docs live. */
-  RULES_URL: z.string().url().default("https://github.com/proof-dev/proof/blob/main/docs/rules"),
+  /** The public source repository, used for "How to fix" docs and Discussions links. */
+  REPO_URL: z.string().url().default("https://github.com/proof-dev/proof"),
+  /** Where the "How to fix" rule docs live. Defaults to docs/rules in REPO_URL. */
+  RULES_URL: z.string().url().optional(),
 
   GITHUB_APP_ID: z.string().default(""),
   GITHUB_APP_SLUG: z.string().default("proof"),
@@ -33,10 +35,11 @@ const Env = z.object({
   CONTACT_EMAIL: z.string().default(""),
 });
 
-export type Env = z.infer<typeof Env>;
+export type Env = z.infer<typeof Env> & { RULES_URL: string };
 
-export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
-  const env = Env.parse(source);
+export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env & { RULES_URL: string } {
+  const parsed = Env.parse(source);
+  const env = { ...parsed, RULES_URL: parsed.RULES_URL ?? `${parsed.REPO_URL.replace(/\/$/, "")}/blob/main/docs/rules` };
   if (env.NODE_ENV === "production") {
     const missing = (
       ["GITHUB_APP_ID", "GITHUB_PRIVATE_KEY", "GITHUB_WEBHOOK_SECRET", "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "ENCRYPTION_KEY"] as const

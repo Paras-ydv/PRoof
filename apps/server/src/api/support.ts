@@ -56,6 +56,7 @@ export function metaRoutes(deps: Deps) {
       installUrl: `https://github.com/apps/${deps.env.GITHUB_APP_SLUG}/installations/new`,
       contactEmail: deps.env.CONTACT_EMAIL || null,
       rulesUrl: deps.env.RULES_URL,
+      repoUrl: deps.env.REPO_URL,
     }),
   );
   return app;

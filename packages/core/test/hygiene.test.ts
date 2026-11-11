@@ -21,6 +21,13 @@ describe("issue check", () => {
     expect(r).toMatchObject({ status: "warn", ratio: 0.5 });
   });
 
+  it("doesn't ask maintainers to assign themselves", async () => {
+    const base = input({ linkedIssues: [{ number: 4, title: "Retry", assignees: [] }] });
+    const r = await issueCheck.run({ ...base, pr: { ...base.pr, author: { login: "dana", association: "OWNER" } } });
+    expect(r).toMatchObject({ status: "pass", ratio: 1 });
+    expect(r.summary).toContain("maintainer");
+  });
+
   it("fails with a how-to when nothing is linked", async () => {
     const r = await issueCheck.run(input());
     expect(r).toMatchObject({ status: "fail", ratio: 0 });

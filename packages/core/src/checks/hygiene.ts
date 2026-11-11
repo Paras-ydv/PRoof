@@ -4,6 +4,8 @@ function changedLines(pr: PrContext): number {
   return pr.files.reduce((n, f) => n + f.additions + f.deletions, 0);
 }
 
+const MAINTAINERS = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
+
 /** A1 · Linked and assigned issue */
 export const issueCheck: Check = {
   id: "issue",
@@ -43,6 +45,16 @@ export const issueCheck: Check = {
       };
     }
     const first = pr.linkedIssues[0]!;
+    // People with write access don't assign themselves before fixing something.
+    if (MAINTAINERS.has(pr.author.association)) {
+      return {
+        ...base,
+        status: "pass",
+        ratio: 1,
+        summary: `Linked to #${first.number}, opened by a maintainer`,
+        evidence: [{ text: `#${first.number} ${first.title}` }],
+      };
+    }
     return {
       ...base,
       status: "warn",

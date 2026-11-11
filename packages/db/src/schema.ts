@@ -31,6 +31,8 @@ export const workspaces = pgTable("workspaces", {
   /** Org-level settings patch (see @proof/core SettingsPatch). */
   settings: jsonb("settings").notNull().default({}),
   settingsVersion: integer("settings_version").notNull().default(1),
+  /** Chosen AI provider and model. The API key lives in `secrets` (kind "ai"). */
+  aiConfig: jsonb("ai_config").$type<{ provider: "anthropic" | "openai" | "openai-compatible"; model: string; baseUrl?: string; monthlyTokenCap?: number } | null>(),
   createdAt: createdAt(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

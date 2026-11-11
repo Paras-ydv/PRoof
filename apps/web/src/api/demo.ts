@@ -268,6 +268,8 @@ export async function demoRequest<T>(path: string, init: { method?: string; body
   const body = init.body as any;
   const ok = { ok: true } as T;
 
+  if (p === "/meta")
+    return { appSlug: "proof", installUrl: "https://github.com/apps/proof/installations/new", contactEmail: "hello@example.com", rulesUrl: "https://github.com/proof-dev/proof/blob/main/docs/rules", repoUrl: "https://github.com/proof-dev/proof" } as T;
   if (p === "/me") return { user: { login: "priya-n", name: "Priya Nair", avatarUrl: null } } as T;
   if (p === "/workspaces") return { workspaces: [{ login: "lumen-labs", accountType: "Organization", status: "active" }] } as T;
   if (p === "/workspaces/lumen-labs" && method === "GET") return detail() as T;

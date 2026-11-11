@@ -1,13 +1,11 @@
 import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { ArrowRight, EyeOff, FileSearch, Hourglass, LogIn, Plus, ShieldCheck, UserX } from "lucide-react";
 import { ApiError, DEMO, signInUrl } from "../api/client";
-import { useMe, useWorkspaces } from "../lib/hooks";
+import { useMe, useMeta, useWorkspaces } from "../lib/hooks";
 import { Button, ButtonLink } from "../components/Button";
 import { Avatar, Callout, EmptyState, Panel, Skeleton } from "../components/Layout";
 import { Logo } from "../components/Logo";
 import "./pages.css";
-
-const INSTALL_URL = "https://github.com/apps/proof/installations/new";
 
 export function SignIn() {
   const [params] = useSearchParams();
@@ -56,6 +54,7 @@ export function SignIn() {
 export function Home() {
   const me = useMe();
   const ws = useWorkspaces();
+  const installUrl = useMeta().data?.installUrl ?? "https://github.com/apps";
   if (me.error instanceof ApiError && me.error.status === 401) return <Navigate to="/signin" replace />;
   if (ws.data?.workspaces.length === 1) return <Navigate to={`/w/${ws.data.workspaces[0]!.login}`} replace />;
 
@@ -79,7 +78,7 @@ export function Home() {
                   </span>
                 </ButtonLink>
               ))}
-              <ButtonLink to={INSTALL_URL} variant="ghost" icon={<Plus />}>
+              <ButtonLink to={installUrl} variant="ghost" icon={<Plus />}>
                 Install on another organization
               </ButtonLink>
             </div>
@@ -88,7 +87,7 @@ export function Home() {
               icon={<Plus />}
               title="Install PRoof on GitHub"
               action={
-                <ButtonLink variant="primary" to={INSTALL_URL} trailing={<ArrowRight />}>
+                <ButtonLink variant="primary" to={installUrl} trailing={<ArrowRight />}>
                   Install on GitHub
                 </ButtonLink>
               }

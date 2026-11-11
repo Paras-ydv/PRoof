@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Mail, MessageCircle } from "lucide-react";
-import { api, ApiError, DEMO } from "../api/client";
-import type { Meta } from "../api/types";
+import { api, ApiError } from "../api/client";
+import { useMeta } from "../lib/hooks";
 import { Button } from "./Button";
 import { Field, Input, Textarea } from "./Form";
 import { Callout, Dialog, useToast } from "./Layout";
@@ -15,7 +15,7 @@ export function FeatureRequestDialog({ open, onClose, workspace }: { open: boole
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const toast = useToast();
-  const meta = useQuery({ queryKey: ["meta"], queryFn: () => fetch("/api/meta").then((r) => r.json() as Promise<Meta>), enabled: open && !DEMO, retry: false });
+  const meta = useMeta();
   const send = useMutation({
     mutationFn: () => api("/support/feature-requests", { method: "POST", body: { title, body, workspace } }),
     onSuccess: () => {
@@ -53,9 +53,11 @@ export function FeatureRequestDialog({ open, onClose, workspace }: { open: boole
       {send.error && <Callout tone="fail">{send.error instanceof ApiError ? send.error.message : "Couldn't send. Try again."}</Callout>}
       <div className="dialog-alt">
         <span>Prefer to talk in public?</span>
-        <a href="https://github.com/proof-dev/proof/discussions" target="_blank" rel="noreferrer">
-          <MessageCircle /> GitHub Discussions
-        </a>
+        {meta.data?.repoUrl && (
+          <a href={`${meta.data.repoUrl}/discussions`} target="_blank" rel="noreferrer">
+            <MessageCircle /> GitHub Discussions
+          </a>
+        )}
         {meta.data?.contactEmail && (
           <span className="dialog-alt-email">
             <Mail /> {meta.data.contactEmail}

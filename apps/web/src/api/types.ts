@@ -12,6 +12,7 @@ export interface Meta {
   installUrl: string;
   contactEmail: string | null;
   rulesUrl: string;
+  repoUrl: string;
 }
 
 export interface WorkspaceSummary {

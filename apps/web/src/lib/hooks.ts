@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { api } from "../api/client";
-import type { Accuracy, AuditEntry, Me, ReportDetail, ReportRow, SettingsPatch, Usage, WorkspaceDetail, WorkspaceSummary } from "../api/types";
+import type { Accuracy, AuditEntry, Me, Meta, ReportDetail, ReportRow, SettingsPatch, Usage, WorkspaceDetail, WorkspaceSummary } from "../api/types";
 
+export const useMeta = () => useQuery({ queryKey: ["meta"], queryFn: () => api<Meta>("/meta"), staleTime: Infinity, retry: false });
 export const useMe = () => useQuery({ queryKey: ["me"], queryFn: () => api<Me>("/me"), retry: false, staleTime: 5 * 60_000 });
 export const useWorkspaces = () => useQuery({ queryKey: ["workspaces"], queryFn: () => api<{ workspaces: WorkspaceSummary[] }>("/workspaces") });
 

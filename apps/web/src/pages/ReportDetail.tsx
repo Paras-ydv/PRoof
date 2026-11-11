@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ArrowUpRight, BookOpen, Check, Clock, GitCommitHorizontal, GitPullRequest, User, X } from "lucide-react";
 import { api } from "../api/client";
 import type { ReportDetail as Detail, ReportItem } from "../api/types";
-import { timeAgo, useLogin, useReport } from "../lib/hooks";
+import { timeAgo, useLogin, useMeta, useReport } from "../lib/hooks";
 import { ButtonLink } from "../components/Button";
 import { Segmented } from "../components/Form";
 import { Callout, PageHeader, Panel, Skeleton, useToast } from "../components/Layout";
@@ -15,8 +15,6 @@ import { InlineCode } from "../components/InlineCode";
 import "./pages.css";
 
 type View = "maintainer" | "contributor";
-
-const RULES_URL = "https://github.com/proof-dev/proof/blob/main/docs/rules";
 
 export function ReportDetail() {
   const login = useLogin();
@@ -175,6 +173,7 @@ function CheckRow({ item, data, canFeedback }: { item: ReportItem; data: Detail;
   const login = useLogin();
   const qc = useQueryClient();
   const toast = useToast();
+  const rulesUrl = useMeta().data?.rulesUrl;
   const mine = data.feedback.find((f) => f.mine && f.checkId === item.id);
   const others = data.feedback.filter((f) => !f.mine && f.checkId === item.id);
   const flagged = item.status === "warn" || item.status === "fail";
@@ -218,8 +217,8 @@ function CheckRow({ item, data, canFeedback }: { item: ReportItem; data: Detail;
         )}
         {(flagged || item.rule) && (
           <div className="check-row-foot">
-            {flagged && item.rule && (
-              <a href={`${RULES_URL}/${item.rule}.md`} target="_blank" rel="noreferrer">
+            {flagged && item.rule && rulesUrl && (
+              <a href={`${rulesUrl}/${item.rule}.md`} target="_blank" rel="noreferrer">
                 <BookOpen /> How to fix
               </a>
             )}

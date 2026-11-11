@@ -1,0 +1,156 @@
+/*
+ * PRoof design tokens.
+ * Direction: a precise review tool. Cool neutrals, one cobalt accent for action,
+ * and a strict semantic set for check results. Evidence (paths, lines, SHAs) is
+ * always set in mono so it reads as something you can verify.
+ *
+ * Every component styles itself through these tokens only.
+ * Light values live on :root; dark values are defined twice so both the OS
+ * setting and an explicit choice work.
+ */
+
+:root {
+  /* Surfaces */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f2f4f7;
+  --surface-3: #eaecf0;
+  --overlay: rgb(16 24 40 / 0.42);
+
+  /* Lines */
+  --border: #e4e7ec;
+  --border-strong: #d0d5dd;
+  --focus: #3b5bdb;
+
+  /* Text */
+  --text: #101828;
+  --text-2: #475467;
+  --text-3: #667085;
+  --text-4: #98a2b3;
+  --text-on-accent: #ffffff;
+
+  /* Accent: actions and selection only */
+  --accent: #3b5bdb;
+  --accent-hover: #3249c4;
+  --accent-soft: #eef2ff;
+  --accent-text: #3149c2;
+
+  /* Check results */
+  --pass: #0f7b57;
+  --pass-soft: #e6f5ee;
+  --warn: #b25407;
+  --warn-soft: #fdf3e5;
+  --fail: #c8261b;
+  --fail-soft: #fdeeec;
+  --pending: #1a63c9;
+  --pending-soft: #ebf4fe;
+  --na: #667085;
+  --na-soft: #f2f4f7;
+  /* Maintainer-only (shadow mode, contributor context) */
+  --private: #6741c6;
+  --private-soft: #f3f0ff;
+
+  /* Type */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: 11.5px;
+  --text-sm: 12.5px;
+  --text-base: 13.5px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --leading: 1.5;
+
+  /* Shape */
+  --radius-sm: 5px;
+  --radius: 7px;
+  --radius-lg: 11px;
+  --radius-xl: 15px;
+
+  /* Depth: borders do most of the work; shadows only lift floating things */
+  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(16 24 40 / 0.07), 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.16), 0 4px 8px -4px rgb(16 24 40 / 0.06);
+
+  /* Layout */
+  --sidebar-w: 248px;
+  --content-max: 1120px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0d12;
+    --surface: #12151c;
+    --surface-2: #181c25;
+    --surface-3: #212633;
+    --overlay: rgb(3 5 10 / 0.6);
+    --border: #222733;
+    --border-strong: #2e3443;
+    --focus: #8098f9;
+    --text: #eceef3;
+    --text-2: #aeb5c4;
+    --text-3: #8a93a6;
+    --text-4: #5f6779;
+    --text-on-accent: #0b0d12;
+    --accent: #8098f9;
+    --accent-hover: #9aaefb;
+    --accent-soft: rgb(128 152 249 / 0.13);
+    --accent-text: #a3b3fb;
+    --pass: #3fcf93;
+    --pass-soft: rgb(63 207 147 / 0.12);
+    --warn: #f3a93b;
+    --warn-soft: rgb(243 169 59 / 0.12);
+    --fail: #f8776d;
+    --fail-soft: rgb(248 119 109 / 0.12);
+    --pending: #5fb3fb;
+    --pending-soft: rgb(95 179 251 / 0.12);
+    --na: #8a93a6;
+    --na-soft: rgb(138 147 166 / 0.12);
+    --private: #ad94fb;
+    --private-soft: rgb(173 148 251 / 0.13);
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.04);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b0d12;
+  --surface: #12151c;
+  --surface-2: #181c25;
+  --surface-3: #212633;
+  --overlay: rgb(3 5 10 / 0.6);
+  --border: #222733;
+  --border-strong: #2e3443;
+  --focus: #8098f9;
+  --text: #eceef3;
+  --text-2: #aeb5c4;
+  --text-3: #8a93a6;
+  --text-4: #5f6779;
+  --text-on-accent: #0b0d12;
+  --accent: #8098f9;
+  --accent-hover: #9aaefb;
+  --accent-soft: rgb(128 152 249 / 0.13);
+  --accent-text: #a3b3fb;
+  --pass: #3fcf93;
+  --pass-soft: rgb(63 207 147 / 0.12);
+  --warn: #f3a93b;
+  --warn-soft: rgb(243 169 59 / 0.12);
+  --fail: #f8776d;
+  --fail-soft: rgb(248 119 109 / 0.12);
+  --pending: #5fb3fb;
+  --pending-soft: rgb(95 179 251 / 0.12);
+  --na: #8a93a6;
+  --na-soft: rgb(138 147 166 / 0.12);
+  --private: #ad94fb;
+  --private-soft: rgb(173 148 251 / 0.13);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.04);
+  color-scheme: dark;
+}

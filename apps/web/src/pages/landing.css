@@ -116,13 +116,15 @@
   box-shadow: 0 0 0 4px var(--pass-soft);
 }
 .lp-title {
-  font-size: clamp(38px, 6vw, 72px);
-  font-weight: 680;
-  line-height: 1.02;
-  letter-spacing: -0.045em;
+  font-size: clamp(46px, 7.4vw, 92px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  font-family: var(--font-display);
 }
 .lp-title span {
   color: var(--text-3);
+  font-style: italic;
 }
 .lp-lede {
   max-width: 50ch;
@@ -713,13 +715,15 @@
 .lp-statement-text {
   max-width: 30ch;
   margin-bottom: 56px;
-  font-size: clamp(26px, 3.2vw, 40px);
-  font-weight: 640;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.8vw, 50px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 .lp-statement-text span {
   color: var(--text-3);
+  font-style: italic;
 }
 @media (min-width: 900px) {
   .lp-statement-text {
@@ -764,15 +768,18 @@
   margin-bottom: 36px;
 }
 .lp-eyebrow {
-  color: var(--accent-text);
-  font-size: var(--text-sm);
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: var(--text-xs);
   font-weight: 600;
 }
 .lp-h2 {
-  font-size: clamp(26px, 3vw, 34px);
-  font-weight: 660;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 3.8vw, 46px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
 }
 .lp-body {
   max-width: 56ch;
@@ -982,10 +989,11 @@
 }
 .lp-final-title {
   max-width: 22ch;
-  font-size: clamp(28px, 3.4vw, 40px);
-  font-weight: 670;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.4vw, 58px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
 }
 .lp-final .btn {
   --h: 42px;

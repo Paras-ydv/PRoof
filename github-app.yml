@@ -1,0 +1,35 @@
+# The GitHub App PRoof needs: every permission and event, and why.
+# Use these values when creating the app in GitHub (Settings → Developer settings → GitHub Apps).
+
+permissions:
+  # Read the diff, post the triage card, ask questions on changed lines
+  pull_requests: write
+  # Read linked issues, /claim comments, assign and unassign claimers
+  issues: write
+  # Read code at the PR head for the ghost-code index, and the PR template
+  contents: read
+  # Read CI results for the CI check
+  checks: read
+  statuses: read
+  # See when fork CI is waiting for a maintainer's approval
+  actions: read
+  # Required by GitHub for every app
+  metadata: read
+  # Org permission: confirm a signed-in user is an org owner before they change settings.
+  # Because this is an org permission, only org owners can install PRoof.
+  members: read
+
+events:
+  - pull_request # opened, updated, edited, labelled
+  - pull_request_review_comment # answers to PRoof's questions
+  - issue_comment # /claim, /unclaim, @proof questions
+  - issues # closed issues end their claims
+  - check_suite # re-score when CI finishes
+  - installation_target # org renamed
+  # installation and installation_repositories are always sent to apps
+
+urls:
+  # Replace with your deployment's public URL
+  webhook: https://proof.example.com/webhooks/github
+  setup: https://proof.example.com/github/setup # tick "Redirect on update"
+  callback: https://proof.example.com/auth/github/callback

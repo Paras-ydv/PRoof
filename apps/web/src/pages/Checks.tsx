@@ -1,23 +1,17 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { CircleDashed, EyeOff, MessageCircleQuestionMark, Plus, Radio, Sparkles, Trash } from "lucide-react";
+import { MessageCircleQuestionMark, Plus, Sparkles, Trash } from "lucide-react";
 import { ApiError } from "../api/client";
 import type { CustomRule, Settings, SettingsPatch } from "../api/types";
 import { useSaveSettings, useWorkspace } from "../lib/hooks";
 import { diff, same } from "../lib/diff";
 import { CONTEXT_CHECKS, SCORED_CHECKS } from "../lib/checks";
 import { Button } from "../components/Button";
-import { Field, Input, Segmented, Select, Switch, Textarea, type SegmentOption } from "../components/Form";
+import { Field, Input, Segmented, Select, Switch, Textarea } from "../components/Form";
+import { MODE_OPTIONS, type Mode } from "../components/modes";
 import { Callout, Dialog, PageHeader, Panel, Skeleton, useToast } from "../components/Layout";
 import { Badge, ModeTag } from "../components/Status";
 import "./pages.css";
 
-type Mode = "off" | "shadow" | "live";
-
-export const MODE_OPTIONS: SegmentOption<Mode>[] = [
-  { value: "off", label: "Off", icon: <CircleDashed />, tone: "muted", title: "Doesn't run" },
-  { value: "shadow", label: "Shadow", icon: <EyeOff />, tone: "private", title: "Runs, but only maintainers see the result" },
-  { value: "live", label: "Live", icon: <Radio />, tone: "pass", title: "Shown on the PR and counted in the public score" },
-];
 
 export function Checks() {
   const ws = useWorkspace();

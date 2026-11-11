@@ -1,0 +1,72 @@
+/* Data tables: dense rows, quiet header, full-row hover when rows are links. */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+.table th {
+  position: sticky;
+  top: 0;
+  padding: 9px 14px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  font-weight: 560;
+  letter-spacing: 0.02em;
+  text-align: left;
+  white-space: nowrap;
+}
+.table th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+.table th:last-child {
+  border-top-right-radius: var(--radius-lg);
+}
+.table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.table tr:last-child td {
+  border-bottom: 0;
+}
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.table .muted {
+  color: var(--text-3);
+}
+.table-link-row {
+  cursor: pointer;
+  transition: background-color 100ms var(--ease);
+}
+.table-link-row:hover {
+  background: var(--surface-2);
+}
+.table-link-row:focus-within {
+  background: var(--surface-2);
+}
+.table-link-row a {
+  color: inherit;
+}
+.table-link-row a:hover {
+  text-decoration: none;
+}
+.cell-title {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.cell-title-main {
+  font-weight: 540;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 46ch;
+}
+.cell-title-sub {
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}

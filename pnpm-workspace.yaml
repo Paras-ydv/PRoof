@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Never install a package version published less than 7 days ago.
+# Reduces exposure to compromised releases; PRoof is meant to be auditable.
+minimumReleaseAge: 10080

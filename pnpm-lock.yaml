@@ -22,9 +22,6 @@ importers:
       '@proof/db':
         specifier: workspace:*
         version: link:../../packages/db
-      drizzle-orm:
-        specifier: ^0.45.4
-        version: 0.45.4(@opentelemetry/api@1.10.0)(pg@8.23.1)(postgres@3.4.9)
       hono:
         specifier: ^4.13.16
         version: 4.13.16

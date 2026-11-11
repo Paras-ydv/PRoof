@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { auditLog, eq, secrets, workspaces } from "@proof/db";
+import { auditLog, eq, repos, secrets, workspaces } from "@proof/db";
 import { clearAccessCache } from "../src/api/access.js";
 import { safeReturnTo } from "../src/api/auth.js";
 import { createApp } from "../src/app.js";
@@ -33,7 +33,13 @@ describe("dashboard API", async () => {
     userGithub: fakeUserGithub,
     exchangeCode: async () => nextToken,
     getInstallation: async (id) => ({ id, account: { id: 900, login: "acme", type: "Organization" } }),
+    github: async () => ({ paginate: async () => installRepos, rest: { apps: { listReposAccessibleToInstallation: () => {} } } }) as any,
   });
+  /** Repos the fake installation can see. */
+  let installRepos = [
+    { id: 701, full_name: "acme/api", private: false },
+    { id: 702, full_name: "acme/web", private: true },
+  ];
   const app = createApp(deps, async () => true);
   beforeEach(() => clearAccessCache());
 
@@ -80,6 +86,20 @@ describe("dashboard API", async () => {
     const res = await app.request("/github/setup?installation_id=51&setup_action=install", { headers: { cookie: maya } });
     expect(res.headers.get("location")).toBe("https://app.example/w/acme?welcome=1");
     expect(await db.select().from(workspaces)).toHaveLength(1);
+    expect((await db.select().from(repos)).map((r) => r.fullName).sort()).toEqual(["acme/api", "acme/web"]);
+  });
+
+  it("syncs repos from GitHub without un-pausing paused ones", async () => {
+    const maya = await signIn("tok-maya");
+    await db.update(repos).set({ enabled: false }).where(eq(repos.githubRepoId, 701));
+    installRepos = [
+      { id: 701, full_name: "acme/api", private: false },
+      { id: 703, full_name: "acme/cli", private: false },
+    ];
+    const res = await call(maya, "/workspaces/acme/repos/sync", { method: "POST" });
+    expect(res.status).toBe(200);
+    const rows = Object.fromEntries((await db.select().from(repos)).map((r) => [r.fullName, r.enabled]));
+    expect(rows).toEqual({ "acme/api": false, "acme/web": false, "acme/cli": true });
   });
 
   it("lets org admins change settings and logs it, but not members", async () => {

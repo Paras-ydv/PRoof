@@ -21,6 +21,7 @@ import {
   workspaces,
 } from "@proof/db";
 import { hint } from "../crypto.js";
+import { syncRepos } from "../github/sync.js";
 import type { Deps, Workspace } from "../deps.js";
 import { canAdminRepo, canAdminWorkspace, canView, visibleInstallations } from "./access.js";
 import type { AppEnv, SessionUser } from "./session.js";
@@ -186,6 +187,18 @@ export function workspaceRoutes(deps: Deps) {
     await db.update(repos).set({ settings: patch }).where(eq(repos.id, repo.id));
     await audit(deps, ws, c.get("user"), "repo.settings.update", repo.fullName, repo.settings, patch);
     return c.json({ ok: true, effective: resolveSettings(ws.settings as SettingsPatch, patch) });
+  });
+
+  /** Re-read the repo list from GitHub. Read-only on GitHub's side, so anyone who can see the workspace may run it. */
+  app.post("/:login/repos/sync", async (c) => {
+    const ws = await load(c);
+    if (ws instanceof Response) return ws;
+    try {
+      return c.json({ ok: true, count: await syncRepos(deps, ws) });
+    } catch (err) {
+      deps.log.error("Repo sync failed", { workspace: ws.login, err: String(err) });
+      return c.json({ error: "Couldn't read the repository list from GitHub. Try again in a minute." }, 502);
+    }
   });
 
   app.patch("/:login/repos/:repoId", async (c) => {

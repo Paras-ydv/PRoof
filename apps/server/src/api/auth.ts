@@ -3,6 +3,7 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { users, workspaces, eq } from "@proof/db";
 import { randomToken } from "../crypto.js";
 import type { Deps } from "../deps.js";
+import { syncRepos } from "../github/sync.js";
 import { visibleInstallations } from "./access.js";
 import { createSession, endSession, readSession } from "./session.js";
 
@@ -126,6 +127,8 @@ export function setupRoutes(deps: Deps) {
         .onConflictDoUpdate({ target: workspaces.githubAccountId, set: { installationId: inst.id, status: "active", updatedAt: new Date() } })
         .returning();
     }
+    // Fill the repo list now, in case the installation webhook never arrived.
+    await syncRepos(deps, ws!).catch((err) => deps.log.warn("Repo sync after setup failed", { err: String(err) }));
     return c.redirect(`${deps.env.APP_URL}/w/${ws!.login}?welcome=1`);
   });
 

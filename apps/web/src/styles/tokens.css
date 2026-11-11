@@ -1,8 +1,9 @@
 /*
  * PRoof design tokens.
- * Direction: a precise review tool. Cool neutrals, one cobalt accent for action,
- * and a strict semantic set for check results. Evidence (paths, lines, SHAs) is
- * always set in mono so it reads as something you can verify.
+ * Direction: quiet and premium. Warm stone neutrals, ink (or white, in dark) for the
+ * primary action, and colour only where it carries meaning: pass, warn, fail, pending,
+ * and brass for anything only maintainers can see. Geist for the interface and code,
+ * Instrument Serif for display headlines.
  *
  * Every component styles itself through these tokens only.
  * Light values live on :root; dark values are defined twice so both the OS
@@ -11,48 +12,49 @@
 
 :root {
   /* Surfaces */
-  --bg: #f6f7f9;
+  --bg: #fafaf9;
   --surface: #ffffff;
-  --surface-2: #f2f4f7;
-  --surface-3: #eaecf0;
-  --overlay: rgb(16 24 40 / 0.42);
+  --surface-2: #f5f5f4;
+  --surface-3: #ebebe9;
+  --overlay: rgb(12 10 9 / 0.38);
 
   /* Lines */
-  --border: #e4e7ec;
-  --border-strong: #d0d5dd;
-  --focus: #3b5bdb;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --focus: #1c1917;
 
   /* Text */
-  --text: #101828;
-  --text-2: #475467;
-  --text-3: #667085;
-  --text-4: #98a2b3;
-  --text-on-accent: #ffffff;
+  --text: #0c0a09;
+  --text-2: #44403c;
+  --text-3: #78716c;
+  --text-4: #a8a29e;
+  --text-on-accent: #fafaf9;
 
-  /* Accent: actions and selection only */
-  --accent: #3b5bdb;
-  --accent-hover: #3249c4;
-  --accent-soft: #eef2ff;
-  --accent-text: #3149c2;
+  /* Primary action: ink */
+  --accent: #1c1917;
+  --accent-hover: #3a3532;
+  --accent-soft: #f0efed;
+  --accent-text: #1c1917;
 
   /* Check results */
-  --pass: #0f7b57;
-  --pass-soft: #e6f5ee;
-  --warn: #b25407;
-  --warn-soft: #fdf3e5;
-  --fail: #c8261b;
-  --fail-soft: #fdeeec;
-  --pending: #1a63c9;
-  --pending-soft: #ebf4fe;
-  --na: #667085;
-  --na-soft: #f2f4f7;
-  /* Maintainer-only (shadow mode, contributor context) */
-  --private: #6741c6;
-  --private-soft: #f3f0ff;
+  --pass: #15803d;
+  --pass-soft: #ecf6ef;
+  --warn: #c2410c;
+  --warn-soft: #fdf1ea;
+  --fail: #b91c1c;
+  --fail-soft: #fcefee;
+  --pending: #2563a8;
+  --pending-soft: #eef3f9;
+  --na: #78716c;
+  --na-soft: #f5f5f4;
+  /* Maintainer-only (shadow mode, contributor context): brass */
+  --private: #8a6a24;
+  --private-soft: #f7f1e3;
 
   /* Type */
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --text-xs: 11.5px;
   --text-sm: 12.5px;
   --text-base: 13.5px;
@@ -69,9 +71,9 @@
   --radius-xl: 15px;
 
   /* Depth: borders do most of the work; shadows only lift floating things */
-  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
-  --shadow-sm: 0 1px 3px rgb(16 24 40 / 0.07), 0 1px 2px rgb(16 24 40 / 0.04);
-  --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.16), 0 4px 8px -4px rgb(16 24 40 / 0.06);
+  --shadow-xs: 0 1px 2px rgb(28 25 23 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(28 25 23 / 0.07), 0 1px 2px rgb(28 25 23 / 0.04);
+  --shadow-lg: 0 18px 40px -12px rgb(28 25 23 / 0.18), 0 4px 10px -4px rgb(28 25 23 / 0.06);
 
   /* Layout */
   --sidebar-w: 248px;
@@ -83,74 +85,74 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0b0d12;
-    --surface: #12151c;
-    --surface-2: #181c25;
-    --surface-3: #212633;
-    --overlay: rgb(3 5 10 / 0.6);
-    --border: #222733;
-    --border-strong: #2e3443;
-    --focus: #8098f9;
-    --text: #eceef3;
-    --text-2: #aeb5c4;
-    --text-3: #8a93a6;
-    --text-4: #5f6779;
-    --text-on-accent: #0b0d12;
-    --accent: #8098f9;
-    --accent-hover: #9aaefb;
-    --accent-soft: rgb(128 152 249 / 0.13);
-    --accent-text: #a3b3fb;
-    --pass: #3fcf93;
-    --pass-soft: rgb(63 207 147 / 0.12);
-    --warn: #f3a93b;
-    --warn-soft: rgb(243 169 59 / 0.12);
-    --fail: #f8776d;
-    --fail-soft: rgb(248 119 109 / 0.12);
-    --pending: #5fb3fb;
-    --pending-soft: rgb(95 179 251 / 0.12);
-    --na: #8a93a6;
-    --na-soft: rgb(138 147 166 / 0.12);
-    --private: #ad94fb;
-    --private-soft: rgb(173 148 251 / 0.13);
+    --bg: #09090b;
+    --surface: #111113;
+    --surface-2: #18181b;
+    --surface-3: #232326;
+    --overlay: rgb(0 0 0 / 0.62);
+    --border: #222225;
+    --border-strong: #2f2f34;
+    --focus: #fafaf9;
+    --text: #fafaf9;
+    --text-2: #c2c0bd;
+    --text-3: #8f8c88;
+    --text-4: #5f5c59;
+    --text-on-accent: #0c0a09;
+    --accent: #fafaf9;
+    --accent-hover: #e2e0dd;
+    --accent-soft: rgb(250 250 249 / 0.08);
+    --accent-text: #fafaf9;
+    --pass: #4ade80;
+    --pass-soft: rgb(74 222 128 / 0.1);
+    --warn: #fb923c;
+    --warn-soft: rgb(251 146 60 / 0.11);
+    --fail: #f87171;
+    --fail-soft: rgb(248 113 113 / 0.11);
+    --pending: #7cb4f0;
+    --pending-soft: rgb(124 180 240 / 0.1);
+    --na: #8f8c88;
+    --na-soft: rgb(143 140 136 / 0.1);
+    --private: #d9b56a;
+    --private-soft: rgb(217 181 106 / 0.11);
     --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.45);
-    --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.04);
+    --shadow-lg: 0 20px 44px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.04);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0b0d12;
-  --surface: #12151c;
-  --surface-2: #181c25;
-  --surface-3: #212633;
-  --overlay: rgb(3 5 10 / 0.6);
-  --border: #222733;
-  --border-strong: #2e3443;
-  --focus: #8098f9;
-  --text: #eceef3;
-  --text-2: #aeb5c4;
-  --text-3: #8a93a6;
-  --text-4: #5f6779;
-  --text-on-accent: #0b0d12;
-  --accent: #8098f9;
-  --accent-hover: #9aaefb;
-  --accent-soft: rgb(128 152 249 / 0.13);
-  --accent-text: #a3b3fb;
-  --pass: #3fcf93;
-  --pass-soft: rgb(63 207 147 / 0.12);
-  --warn: #f3a93b;
-  --warn-soft: rgb(243 169 59 / 0.12);
-  --fail: #f8776d;
-  --fail-soft: rgb(248 119 109 / 0.12);
-  --pending: #5fb3fb;
-  --pending-soft: rgb(95 179 251 / 0.12);
-  --na: #8a93a6;
-  --na-soft: rgb(138 147 166 / 0.12);
-  --private: #ad94fb;
-  --private-soft: rgb(173 148 251 / 0.13);
+  --bg: #09090b;
+  --surface: #111113;
+  --surface-2: #18181b;
+  --surface-3: #232326;
+  --overlay: rgb(0 0 0 / 0.62);
+  --border: #222225;
+  --border-strong: #2f2f34;
+  --focus: #fafaf9;
+  --text: #fafaf9;
+  --text-2: #c2c0bd;
+  --text-3: #8f8c88;
+  --text-4: #5f5c59;
+  --text-on-accent: #0c0a09;
+  --accent: #fafaf9;
+  --accent-hover: #e2e0dd;
+  --accent-soft: rgb(250 250 249 / 0.08);
+  --accent-text: #fafaf9;
+  --pass: #4ade80;
+  --pass-soft: rgb(74 222 128 / 0.1);
+  --warn: #fb923c;
+  --warn-soft: rgb(251 146 60 / 0.11);
+  --fail: #f87171;
+  --fail-soft: rgb(248 113 113 / 0.11);
+  --pending: #7cb4f0;
+  --pending-soft: rgb(124 180 240 / 0.1);
+  --na: #8f8c88;
+  --na-soft: rgb(143 140 136 / 0.1);
+  --private: #d9b56a;
+  --private-soft: rgb(217 181 106 / 0.11);
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.45);
-  --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-lg: 0 20px 44px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.04);
   color-scheme: dark;
 }

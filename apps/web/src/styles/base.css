@@ -17,8 +17,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--leading);
-  /* Inter: straight-sided 1, open digits, disambiguated l */
-  font-feature-settings: "cv11", "ss01", "ss03";
+  font-feature-settings: "liga", "calt";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -101,4 +100,22 @@ textarea {
   box-shadow: inset 0 0 0 1px var(--border);
   color: var(--text);
   font-size: 0.88em;
+}
+
+/* Links inside running content: underlined, since the accent is ink, not a hue. */
+.check-row-foot a,
+.evidence a,
+.dialog-alt a,
+.callout a,
+.signin-foot a,
+.field-hint a {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+.check-row-foot a:hover,
+.evidence a:hover,
+.dialog-alt a:hover,
+.callout a:hover {
+  text-decoration-color: currentColor;
 }

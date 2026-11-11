@@ -20,12 +20,10 @@ import { DEMO, signInUrl } from "../api/client";
 import { useMe, useMeta } from "../lib/hooks";
 import { ButtonLink } from "../components/Button";
 import { Logo } from "../components/Logo";
-import { CodeRef, ScoreDial } from "../components/Score";
-import { StatusIcon, VisibilityTag, type CheckStatus } from "../components/Status";
-import { InlineCode } from "../components/InlineCode";
+import { ProductTour } from "./ProductTour";
 import "./landing.css";
 
-/** Public landing page. Everything shown in the product preview is an illustrative example. */
+/** Public landing page. Everything in the product tour is an illustrative example. */
 export function Landing() {
   const me = useMe();
   const meta = useMeta();
@@ -60,43 +58,49 @@ export function Landing() {
 
       <main>
         <section className="lp-hero">
-          <div className="lp-wrap lp-hero-grid">
+          <div className="lp-wrap">
             <div className="lp-hero-text">
               <p className="lp-kicker">
                 <span className="lp-dot" /> For open-source maintainers
               </p>
               <h1 className="lp-title">Know which pull requests are ready before you open them.</h1>
-              <p className="lp-lede">
-                PRoof reads every PR the moment it lands: a plain summary, a readiness score, and the exact line behind each flag. You stay the one who decides.
-              </p>
-              <div className="lp-cta">
-                <ButtonLink to={cta} variant="primary" trailing={<ArrowRight />}>
-                  {ctaLabel}
-                </ButtonLink>
-                {meta.data?.repoUrl && (
-                  <ButtonLink to={meta.data.repoUrl} variant="secondary" icon={<BookOpen />}>
-                    Read the source
+              <div className="lp-hero-row">
+                <p className="lp-lede">
+                  PRoof reads every PR the moment it lands: a plain summary, a readiness score, and the exact line behind each flag. You stay the one who decides.
+                </p>
+                <div className="lp-cta">
+                  <ButtonLink to={cta} variant="primary" trailing={<ArrowRight />}>
+                    {ctaLabel}
                   </ButtonLink>
-                )}
+                  {meta.data?.repoUrl && (
+                    <ButtonLink to={meta.data.repoUrl} variant="secondary" icon={<BookOpen />}>
+                      Read the source
+                    </ButtonLink>
+                  )}
+                </div>
               </div>
-              <p className="lp-fine">Free and open source. Starts in shadow mode, so contributors see nothing until you're ready.</p>
             </div>
-            <PrCardPreview />
+            <ProductTour />
           </div>
         </section>
 
-        <section className="lp-problem">
-          <div className="lp-wrap lp-three">
-            <Problem title="Code the author can't explain" text="Generated changes that call functions nowhere in your repo, opened by someone who can't say why." />
-            <Problem title="PRs with no issue behind them" text="Drive-by changes nobody asked for, with an empty template and no linked issue." />
-            <Problem title="Claims that go quiet" text={'"Can I take this?" followed by three weeks of silence while others wait.'} />
+        <section className="lp-statement">
+          <div className="lp-wrap">
+            <p className="lp-statement-text">
+              Review time goes to the wrong PRs. <span>Code the author can't explain, changes with no issue behind them, and claims that sit silent for weeks. PRoof sorts that out before you open the tab, and shows its working.</span>
+            </p>
+            <div className="lp-three">
+              <Problem title="Code the author can't explain" text="Generated changes that call functions nowhere in your repo, opened by someone who can't say why." />
+              <Problem title="PRs with no issue behind them" text="Drive-by changes nobody asked for, with an empty template and no linked issue." />
+              <Problem title="Claims that go quiet" text={'"Can I take this?" followed by three weeks of silence while others wait.'} />
+            </div>
           </div>
         </section>
 
         <section className="lp-section" id="how">
           <div className="lp-wrap">
             <SectionHead eyebrow="How it works" title="Three steps, and you control each one." />
-            <ol className="lp-steps">
+            <ol className="lp-steps lp-timeline">
               <Step n={1} icon={<GitPullRequest />} title="Install on GitHub">
                 Only an org owner can install PRoof, through GitHub's own install page. Pick the repositories; one workspace per organization.
               </Step>
@@ -298,51 +302,5 @@ function Feature({ icon, title, children }: { icon: React.ReactNode; title: stri
       <h3>{title}</h3>
       <p>{children}</p>
     </div>
-  );
-}
-
-const PREVIEW: { status: CheckStatus; title: string; summary: string; pts: string; ref?: [string, number]; private?: boolean }[] = [
-  { status: "pass", title: "Linked issue", summary: "Linked to #981, claimed by the author", pts: "15/15" },
-  { status: "warn", title: "Tests", summary: "`upload.ts` changed with no test changes", pts: "5/15", ref: ["src/storage/upload.ts", 31] },
-  { status: "fail", title: "Ghost code", summary: "`retryWithJitter` is imported from ./backoff, which doesn't define it", pts: "13/20", ref: ["src/storage/upload.ts", 4], private: true },
-  { status: "pass", title: "CI", summary: "All checks passed", pts: "15/15" },
-];
-
-/** The product itself, as the hero image. An example PR, labelled as one. */
-function PrCardPreview() {
-  return (
-    <figure className="lp-preview" aria-label="Example PRoof report">
-      <div className="lp-preview-bar">
-        <GitPullRequest size={14} />
-        <span className="lp-preview-pr">feat(storage): retry uploads with backoff</span>
-        <span className="lp-preview-num">#1042</span>
-      </div>
-      <div className="lp-preview-head">
-        <ScoreDial value={74} size={52} />
-        <div>
-          <div className="lp-preview-band">Small fixes</div>
-          <p className="lp-preview-summary">Adds exponential backoff to failed S3 uploads and a maxAttempts option to the storage config.</p>
-        </div>
-      </div>
-      <div className="lp-preview-rows">
-        {PREVIEW.map((r) => (
-          <div className="lp-preview-row" key={r.title}>
-            <StatusIcon status={r.status} size={18} />
-            <div className="lp-preview-main">
-              <div className="lp-preview-title">
-                {r.title}
-                {r.private && <VisibilityTag visibility="maintainers" />}
-              </div>
-              <div className="lp-preview-text">
-                <InlineCode text={r.summary} />
-              </div>
-              {r.ref && <CodeRef path={r.ref[0]} line={r.ref[1]} />}
-            </div>
-            <span className="lp-preview-pts">{r.pts}</span>
-          </div>
-        ))}
-      </div>
-      <figcaption className="lp-preview-cap">Example report</figcaption>
-    </figure>
   );
 }
